@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block">
+    {% if user.image %}
+        <a href="{{ user.image }}"><img src="{{ user.image }}" width=300 height=300 align="left"></a>
+    {% else %}
+        <img src="/static/img/0.jpg" width=300 height=300 align="left">
+    {% endif %}
+    <br>
+    <h3 style="text-align: center;">{{ title }}</h3>
+    <br>
+    <textarea class="profile" readonly>
+        {{ user.about }}
+    </textarea>
+    <br>
+    <br>
+    {% if user.birthday %}
+        <h6>Дата рождения: {{ user.birthday }}</h6>
+    {% endif %}
+    <h6>Родной город: {{ user.hometown }}</h6>
+    <br>
+    {% if user.id == current_user.id %}
+        <a class="btn btn-outline-secondary" href="/user/redact" style="width: 100%;">Редактировать</a>
+    {% endif %}
+</div>
+{% endblock %}

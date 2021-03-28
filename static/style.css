@@ -2,6 +2,10 @@ h1 {
     text-align: center;
 }
 
+h6 {
+    text-align: center;
+}
+
 div.block {
     min-height: 320px;
     margin-left: auto;

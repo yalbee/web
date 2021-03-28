@@ -17,8 +17,9 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hometown = sqlalchemy.Column(sqlalchemy.String)
-    birthday = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True)
-    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    birthday = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
+    image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

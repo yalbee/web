@@ -14,7 +14,7 @@
                 <div class="container-fluid">
                     <h1>Мэсэжэр</h1>
                 {% if current_user.is_authenticated %}
-                    <a class="navbar-brand" href="/logout" style="color: #FFFFFF;">
+                    <a class="navbar-brand" href="user/{{ current_user.id }}" style="color: #FFFFFF;">
                         {{ current_user.name }} {{ current_user.surname }}</a>
                 {% else %}
                     <p>
@@ -24,6 +24,7 @@
                 {% endif %}
                 </div>
             </nav>
+            <br>
             <br>
             {% block content %}{% endblock %}
         </body>

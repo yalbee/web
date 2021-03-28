@@ -74,5 +74,14 @@ def logout():
     return redirect("/")
 
 
+@app.route('/user/<id>')
+@login_required
+def profile(id):
+    session = create_session()
+    user = session.query(Users).get(id)
+    title = f'{user.name} {user.surname}'
+    return render_template('profile.html', title=title, user=user)
+
+
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')

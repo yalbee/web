@@ -39,7 +39,7 @@ footer {
 textarea.profile {
     border: 0px;
     margin-left: 3%;
-    width: 65%;
+    width: 67%;
     height: 120px;
     resize: none;
 }
@@ -49,7 +49,7 @@ textarea.new {
     margin: 1%;
     width: 100%;
     min-height: 100px;
-    resize: none;
+    resize: height;
 }
 
 form {

@@ -20,7 +20,7 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     hometown = sqlalchemy.Column(sqlalchemy.String)
     birthday = sqlalchemy.Column(sqlalchemy.Date)
     date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
-    image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    image = sqlalchemy.Column(sqlalchemy.String, default='/static/img/0.jpg')
     news = orm.relation("News", back_populates='user')
 
     def set_password(self, password):

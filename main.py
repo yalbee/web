@@ -86,7 +86,7 @@ def show_news():
     return render_template('news.html', title='Новости', news=news)
 
 
-@app.route('/user/<id>')
+@app.route('/users/<id>')
 @login_required
 def profile(id):
     session = create_session()
@@ -108,7 +108,7 @@ def create_new():
         new.content = form.content.data
         session.add(new)
         session.commit()
-        return redirect(f'/user/{current_user.id}')
+        return redirect(f'/users/{current_user.id}')
     return render_template('create_new.html', title='Создать новость', form=form)
 
 

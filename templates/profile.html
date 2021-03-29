@@ -2,41 +2,33 @@
 
 {% block content %}
 <div class="block">
-    {% if user.image %}
-        <a href="{{ user.image }}"><img src="{{ user.image }}" width=300 height=300 align="left"></a>
-    {% else %}
-        <img src="/static/img/0.jpg" width=300 height=300 align="left">
-    {% endif %}
+    <a href="{{ user.image }}"><img src="{{ user.image }}" width=28% height=28% align="left"></a>
     <br>
     <h3 style="text-align: center;">{{ title }}</h3>
-    <br>
     <textarea class="profile" disabled>
         {{ user.about }}
     </textarea>
     <br>
     <br>
-    {% if user.birthday %}
-        <h6>Дата рождения: {{ user.birthday }}</h6>
-    {% endif %}
+    <h6>Дата рождения: {{ user.birthday }}</h6>
     <h6>Родной город: {{ user.hometown }}</h6>
     <br>
     {% if user.id == current_user.id %}
-        <a class="btn btn-outline-secondary" href="/user/redact" style="width: 100%;">Редактировать</a>
-        <br>
-        <br>
-        <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%;">Создать запись</a>
+        <a class="btn btn-outline-secondary" href="/user/redact" style="width: 100%; margin-top: 2%;">Редактировать</a>
+        <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% endif %}
     {% for new in news %}
         <br>
         <div class="alert alert-success" role="alert" style="margin: 1%;">
-            <a style="text-decoration: none; color: black;" href="/user/{{ new.creator }}">
+            <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
                 <h4 class="alert-heading">{{ title }}</h4>
             </a>
             <hr>
             <textarea class="new" disabled>
                 {{ new.content }}
             </textarea>
+            <p style="text-align: right">{{ new.date }}</p>
         </div>
     {% endfor %}
 </div>

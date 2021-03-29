@@ -2,6 +2,7 @@ import sqlalchemy
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm
+import datetime
 
 
 class News(SqlAlchemyBase, SerializerMixin):
@@ -11,4 +12,5 @@ class News(SqlAlchemyBase, SerializerMixin):
                            primary_key=True, autoincrement=True)
     creator = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     content = sqlalchemy.Column(sqlalchemy.String)
+    date = sqlalchemy.Column(sqlalchemy.Date, default=datetime.datetime.now())
     user = orm.relation('Users')

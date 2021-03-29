@@ -2,6 +2,7 @@ import sqlalchemy
 from .db_session import SqlAlchemyBase
 from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
@@ -17,9 +18,10 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hometown = sqlalchemy.Column(sqlalchemy.String)
-    birthday = sqlalchemy.Column(sqlalchemy.Date, nullable=True)
+    birthday = sqlalchemy.Column(sqlalchemy.Date)
     date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
     image = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    news = orm.relation("News", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

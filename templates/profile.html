@@ -10,7 +10,7 @@
     <br>
     <h3 style="text-align: center;">{{ title }}</h3>
     <br>
-    <textarea class="profile" readonly>
+    <textarea class="profile" disabled>
         {{ user.about }}
     </textarea>
     <br>
@@ -22,6 +22,22 @@
     <br>
     {% if user.id == current_user.id %}
         <a class="btn btn-outline-secondary" href="/user/redact" style="width: 100%;">Редактировать</a>
+        <br>
+        <br>
+        <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%;">Создать запись</a>
+        <br>
     {% endif %}
+    {% for new in news %}
+        <br>
+        <div class="alert alert-success" role="alert" style="margin: 1%;">
+            <a style="text-decoration: none; color: black;" href="/user/{{ new.creator }}">
+                <h4 class="alert-heading">{{ title }}</h4>
+            </a>
+            <hr>
+            <textarea class="new" disabled>
+                {{ new.content }}
+            </textarea>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

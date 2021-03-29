@@ -2,8 +2,10 @@ from flask import Flask, render_template, redirect
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from data.db_session import create_session, global_init
 from data.users import Users
+from data.news import News
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
+from data.forms.create_new import NewForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -20,7 +22,9 @@ def load_user(user_id):
 
 @app.route('/')
 def start_page():
-    return render_template('start_page.html', title='Добро пожаловать')
+    if current_user.is_authenticated:
+        return redirect('/news')
+    return render_template('base.html', title='Добро пожаловать')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -74,13 +78,38 @@ def logout():
     return redirect("/")
 
 
+@app.route('/news')
+@login_required
+def show_news():
+    session = create_session()
+    news = session.query(News).filter(News.creator != current_user.id)
+    return render_template('news.html', title='Новости', news=news)
+
+
 @app.route('/user/<id>')
 @login_required
 def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
     title = f'{user.name} {user.surname}'
-    return render_template('profile.html', title=title, user=user)
+    session = create_session()
+    news = session.query(News).filter(News.creator == user.id)
+    return render_template('profile.html', title=title, user=user, news=news)
+
+
+@app.route('/create_news', methods=['GET', 'POST'])
+@login_required
+def create_new():
+    form = NewForm()
+    if form.validate_on_submit():
+        session = create_session()
+        new = News()
+        new.creator = current_user.id
+        new.content = form.content.data
+        session.add(new)
+        session.commit()
+        return redirect(f'/user/{current_user.id}')
+    return render_template('create_new.html', title='Создать новость', form=form)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block">
+    <h1>новости</h1>
+    <br>
+    <a class="btn btn-primary" href="/create_news" style="width: 80%; margin-left: 10%;">Создать запись</a>
+    {% for new in news %}
+        <br>
+        <br>
+        <div class="alert alert-success" role="alert" style="margin: 1%;">
+            <a style="text-decoration: none; color: black;" href="/user/{{ new.creator }}">
+                <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
+            </a>
+            <hr>
+            <textarea class="new" disabled>
+                {{ new.content }}
+            </textarea>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

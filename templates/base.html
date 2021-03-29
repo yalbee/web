@@ -9,10 +9,18 @@
             <link rel="stylesheet" type="text/css" href="../static/style.css">
             <title>{{ title }}</title>
         </head>
-        <body>
-            <nav class="navbar navbar-light" style="background-color: #051F4B; color: #FFFFFF;">
+        <body style="background-color: #E5E5E5;">
+            {% if current_user.is_authenticated %}
+                <aside>
+                    <p><a style="text-decoration: none; color: black;" href="/news"><h5>Новости</h5></a></p>
+                    <p><a style="text-decoration: none; color: black;" href="/messages"><h5>Сообщения</h5></a></p>
+                    <p><a style="text-decoration: none; color: black;" href="/friends"><h5>Друзья</h5></a></p>
+                    <p><a style="text-decoration: none; color: black;" href="/groups"><h5>Сообщества</h5></a></p>
+                </aside>
+            {% endif %}
+            <header class="navbar navbar-light" style="background-color: #051F4B; color: #FFFFFF;">
                 <div class="container-fluid">
-                    <a style="text-decoration: none; color: white;" href="/"><h1>Мэсэжэр</h1></a>
+                    <a style="text-decoration: none; color: white;" href="/"><h1>НЕ ВК</h1></a>
                 {% if current_user.is_authenticated %}
                     <p style="margin: 0px;">
                         <a class="navbar-brand" href="/user/{{ current_user.id }}" style="color: #FFFFFF;">
@@ -26,9 +34,12 @@
                     </p>
                 {% endif %}
                 </div>
-            </nav>
+            </header>
             <br>
             <br>
             {% block content %}{% endblock %}
+            <footer>
+                <h6>лмао нижний текст</h6>
+            </footer>
         </body>
     </html>

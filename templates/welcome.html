@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block" style="margin-left: auto; margin-right: auto;">
+    <h1>Абсолютно случайная новость</h1>
+    <br>
+    <div class="alert alert-success" role="alert" style="margin: 1%;">
+        <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
+            <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
+        </a>
+        <hr>
+        <textarea class="new" disabled>
+            {{ new.content }}
+        </textarea>
+        <p style="text-align: right">{{ new.date }}</p>
+    </div>
+</div>
+{% endblock %}

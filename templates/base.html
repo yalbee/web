@@ -22,11 +22,11 @@
                 <div class="container-fluid">
                     <a style="text-decoration: none; color: white;" href="/"><h1>НЕ ВК</h1></a>
                 {% if current_user.is_authenticated %}
-                    <p style="margin: 0px;">
+                    <div>
                         <a class="navbar-brand" href="/users/{{ current_user.id }}" style="color: #FFFFFF;">
                         {{ current_user.name }} {{ current_user.surname }}</a>
                         <a class="btn btn-danger" href="/logout">Выйти</a>
-                    </p>
+                    </div>
                 {% else %}
                     <p style="margin: 0px;">
                         <a class="btn btn-primary " href="/register">Зарегистрироваться</a>

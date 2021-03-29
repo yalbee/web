@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, jsonify, make_response
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from data.db_session import create_session, global_init
 from data.users import Users
@@ -6,6 +6,7 @@ from data.news import News
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -24,7 +25,9 @@ def load_user(user_id):
 def start_page():
     if current_user.is_authenticated:
         return redirect('/news')
-    return render_template('base.html', title='Добро пожаловать')
+    session = create_session()
+    new = random.choice(session.query(News).all())
+    return render_template('welcome.html', title='НЕ ВК.com', new=new)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -110,6 +113,16 @@ def create_new():
         session.commit()
         return redirect(f'/users/{current_user.id}')
     return render_template('create_new.html', title='Создать новость', form=form)
+
+
+@app.errorhandler(401)
+def not_found(error):
+    return redirect('/login')
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'not found'}), 404)
 
 
 if __name__ == '__main__':

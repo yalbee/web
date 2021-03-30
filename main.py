@@ -7,7 +7,7 @@ from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import random
 
 app = Flask(__name__)
@@ -110,10 +110,14 @@ def redact_profile():
         session = create_session()
         user = session.query(Users).get(current_user.id)
         if form.image.data:
-            image = Image.open(form.image.data)
-            path = f'/static/img/{current_user.id}.jpg'
-            image.save(path)
-            user.image = path
+            try:
+                image = Image.open(form.image.data)
+                path = f'/static/img/{current_user.id}.jpg'
+                image.save(path)
+                user.image = path
+            except UnidentifiedImageError:
+                return render_template('redact_profile.html', title='Редактировать профиль',
+                                       form=form, message='Это не фотография...')
         user.about = form.about.data
         session.commit()
         return redirect(f'/users/{current_user.id}')

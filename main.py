@@ -6,6 +6,8 @@ from data.news import News
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
+from data.forms.redact_profile import ProfileRedactForm
+from PIL import Image
 import random
 
 app = Flask(__name__)
@@ -98,6 +100,24 @@ def profile(id):
     session = create_session()
     news = session.query(News).filter(News.creator == user.id)
     return render_template('profile.html', title=title, user=user, news=news)
+
+
+@app.route('/users/redact', methods=['GET', 'POST'])
+@login_required
+def redact_profile():
+    form = ProfileRedactForm()
+    if form.validate_on_submit():
+        session = create_session()
+        user = session.query(Users).get(current_user.id)
+        if form.image.data:
+            image = Image.open(form.image.data)
+            path = f'/static/img/{current_user.id}.jpg'
+            image.save(path)
+            user.image = path
+        user.about = form.about.data
+        session.commit()
+        return redirect(f'/users/{current_user.id}')
+    return render_template('redact_profile.html', title='Редактировать профиль', form=form)
 
 
 @app.route('/create_news', methods=['GET', 'POST'])

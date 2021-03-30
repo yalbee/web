@@ -14,11 +14,11 @@
     <h6>Родной город: {{ user.hometown }}</h6>
     <br>
     {% if user.id == current_user.id %}
-        <a class="btn btn-outline-secondary" href="/user/redact" style="width: 100%; margin-top: 2%;">Редактировать</a>
+        <a class="btn btn-outline-secondary" href="/users/redact" style="width: 100%; margin-top: 2%;">Редактировать</a>
         <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% else %}
-        <a class="btn btn-outline-secondary" href="/friends/requests/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
+        <a class="btn btn-outline-secondary" href="/friends/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
         <a class="btn btn-outline-secondary" href="/messages/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отправить сообщение</a>
         <br>
     {% endif %}

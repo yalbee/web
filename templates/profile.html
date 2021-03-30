@@ -14,7 +14,7 @@
     <h6>Родной город: {{ user.hometown }}</h6>
     <br>
     {% if user.id == current_user.id %}
-        <a class="btn btn-outline-secondary" href="/users/redact" style="width: 100%; margin-top: 2%;">Редактировать</a>
+        <a class="btn btn-outline-secondary" href="/redact_profile" style="width: 100%; margin-top: 2%;">Редактировать</a>
         <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% else %}

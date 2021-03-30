@@ -24,12 +24,14 @@ def load_user(user_id):
 
 
 @app.route('/')
-def start_page():
+def welcome():
     if current_user.is_authenticated:
         return redirect('/news')
     session = create_session()
-    new = random.choice(session.query(News).all())
-    return render_template('welcome.html', title='НЕ ВК.com', new=new)
+    news = session.query(News).all()
+    if news:
+        return render_template('welcome.html', title='НЕ ВК.com', new=random.choice(news))
+    return render_template('base.html', title='НЕ ВК.com')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -102,7 +104,7 @@ def profile(id):
     return render_template('profile.html', title=title, user=user, news=news)
 
 
-@app.route('/users/redact', methods=['GET', 'POST'])
+@app.route('/redact_profile', methods=['GET', 'POST'])
 @login_required
 def redact_profile():
     form = ProfileRedactForm()
@@ -112,9 +114,9 @@ def redact_profile():
         if form.image.data:
             try:
                 image = Image.open(form.image.data)
-                path = f'/static/img/{current_user.id}.jpg'
-                image.save(path)
-                user.image = path
+                path = f'static/img/{current_user.id}.' + str(image.format).lower()
+                image.save(path, format=image.format)
+                user.image = '/' + path
             except UnidentifiedImageError:
                 return render_template('redact_profile.html', title='Редактировать профиль',
                                        form=form, message='Это не фотография...')

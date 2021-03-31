@@ -33,6 +33,9 @@
                 {{ new.content }}
             </textarea>
             <p style="text-align: right">{{ new.date }}</p>
+            {% if user.id == current_user.id %}
+                <a class="btn btn-success" href="/news/{{ new.id }}">Редактировать</a>
+            {% endif %}
         </div>
     {% endfor %}
 </div>

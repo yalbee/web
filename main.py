@@ -99,7 +99,6 @@ def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
     title = f'{user.name} {user.surname}'
-    session = create_session()
     return render_template('profile.html', title=title, user=user)
 
 
@@ -149,6 +148,29 @@ def create_new():
         session.commit()
         return redirect(f'/users/{current_user.id}')
     return render_template('create_new.html', title='Создать новость', form=form)
+
+
+@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@login_required
+def redact_new(id):
+    form = NewForm()
+    if form.validate_on_submit():
+        session = create_session()
+        new = session.query(News).get(id)
+        new.content = form.content.data
+        session.commit()
+        return redirect(f'/users/{current_user.id}')
+    return render_template('redact_new.html', title='Редактировать запись', form=form, id=id)
+
+
+@app.route('/delete_new/<int:id>')
+@login_required
+def delete_new(id):
+    session = create_session()
+    new = session.query(News).get(id)
+    session.delete(new)
+    session.commit()
+    return redirect(f'/users/{current_user.id}')
 
 
 @app.errorhandler(401)

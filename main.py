@@ -100,8 +100,7 @@ def profile(id):
     user = session.query(Users).get(id)
     title = f'{user.name} {user.surname}'
     session = create_session()
-    news = session.query(News).filter(News.creator == user.id)
-    return render_template('profile.html', title=title, user=user, news=news)
+    return render_template('profile.html', title=title, user=user)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])

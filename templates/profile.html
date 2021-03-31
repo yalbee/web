@@ -22,7 +22,7 @@
         <a class="btn btn-outline-secondary" href="/messages/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отправить сообщение</a>
         <br>
     {% endif %}
-    {% for new in news %}
+    {% for new in user.news %}
         <br>
         <div class="alert alert-success" role="alert" style="margin: 1%;">
             <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">

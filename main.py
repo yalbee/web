@@ -126,6 +126,17 @@ def redact_profile():
     return render_template('redact_profile.html', title='Редактировать профиль', form=form)
 
 
+@app.route('/delete_profile')
+@login_required
+def delete_profile():
+    session = create_session()
+    user = session.query(Users).get(current_user.id)
+    logout_user()
+    session.delete(user)
+    session.commit()
+    return redirect('/')
+
+
 @app.route('/create_news', methods=['GET', 'POST'])
 @login_required
 def create_new():

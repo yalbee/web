@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="block">
-    <a href="{{ user.image }}"><img src="{{ user.image }}" width=28% height=28% align="left"></a>
+    <a href="{{ user.image }}"><img src="{{ user.image }}" width=280px height=280px align="left"></a>
     <br>
     <h3 style="text-align: center;">{{ title }}</h3>
     <textarea class="profile" disabled>
@@ -18,8 +18,12 @@
         <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% else %}
-        <a class="btn btn-outline-secondary" href="/friends/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
-        <a class="btn btn-outline-secondary" href="/messages/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отправить сообщение</a>
+        <a class="btn btn-outline-primary" href="/messages/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отправить сообщение</a>
+        {% if friend %}
+            <a class="btn btn-outline-danger" href="/delete_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Удалить из друзей</a>
+        {% else %}
+            <a class="btn btn-outline-success" href="/friends/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
+        {% endif %}
         <br>
     {% endif %}
     {% for new in user.news %}

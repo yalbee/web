@@ -3,6 +3,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
+from data.friends import Friends
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
@@ -99,7 +100,8 @@ def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
     title = f'{user.name} {user.surname}'
-    return render_template('profile.html', title=title, user=user)
+    friend = session.query(Friends).filter(Friends.friend == id).first()
+    return render_template('profile.html', title=title, user=user, friend=friend)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -171,6 +173,37 @@ def delete_new(id):
     session.delete(new)
     session.commit()
     return redirect(f'/users/{current_user.id}')
+
+
+@app.route('/friends')
+@login_required
+def friends():
+    session, friends = create_session(), []
+    for friend in current_user.friends:
+        friends.append(session.query(Users).get(friend.friend))
+    return render_template('friends.html', friends=friends, title='Друзья')
+
+
+@app.route('/friends/<int:id>')
+@login_required
+def add_friend(id):
+    session = create_session()
+    friend = Friends()
+    friend.friend = id
+    current_user.friends.append(friend)
+    session.merge(current_user)
+    session.commit()
+    return redirect(f'/users/{id}')
+
+
+@app.route('/delete_friend/<int:id>')
+@login_required
+def delete_friend(id):
+    session = create_session()
+    friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
+    session.delete(friend)
+    session.commit()
+    return redirect(f'/users/{id}')
 
 
 @app.errorhandler(401)

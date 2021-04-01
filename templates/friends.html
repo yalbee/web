@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block">
+    <h1>друзья</h1>
+    {% if friends %}
+        {% for friend in friends %}
+            <br>
+            <div style="margin: 1%; padding: 1%;">
+                <img src="{{ friend.image }}" width=100px height=100px align="left">
+                <h3 style="position: relative; left: 3%; top: 30px;"><a href="/users/{{ friend.id }}" style="text-decoration: none; color: black;">{{ friend.name }} {{ friend.surname }}</a></h3>
+            </div>
+            <br>
+            <br>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <h6>Друзей нет((((</h6>
+    {% endif %}
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@
 <div class="block">
     <h1>друзья</h1>
     {% if friends %}
+        <h6>Всего друзей: {{ current_user.friends_count }}</h6>
         {% for friend in friends %}
             <br>
             <div style="margin: 1%; padding: 1%;">

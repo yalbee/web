@@ -12,6 +12,7 @@
     <br>
     <h6>Дата рождения: {{ user.birthday }}</h6>
     <h6>Родной город: {{ user.hometown }}</h6>
+    <h6>Друзей: {{ user.friends_count }}</h6>
     <br>
     {% if user.id == current_user.id %}
         <a class="btn btn-outline-secondary" href="/redact_profile" style="width: 100%; margin-top: 2%;">Редактировать</a>

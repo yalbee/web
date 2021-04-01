@@ -191,6 +191,7 @@ def add_friend(id):
     friend = Friends()
     friend.friend = id
     current_user.friends.append(friend)
+    current_user.friends_count += 1
     session.merge(current_user)
     session.commit()
     return redirect(f'/users/{id}')
@@ -202,6 +203,8 @@ def delete_friend(id):
     session = create_session()
     friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
     session.delete(friend)
+    current_user.friends_count -= 1
+    session.merge(current_user)
     session.commit()
     return redirect(f'/users/{id}')
 

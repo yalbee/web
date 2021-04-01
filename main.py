@@ -175,16 +175,17 @@ def delete_new(id):
     return redirect(f'/users/{current_user.id}')
 
 
-@app.route('/friends')
-@login_required
-def friends():
-    session, friends = create_session(), []
-    for friend in current_user.friends:
-        friends.append(session.query(Users).get(friend.friend))
-    return render_template('friends.html', friends=friends, title='Друзья')
-
-
 @app.route('/friends/<int:id>')
+@login_required
+def friends(id):
+    session, friends = create_session(), []
+    user = session.query(Users).get(id)
+    for friend in user.friends:
+        friends.append(session.query(Users).get(friend.friend))
+    return render_template('friends.html', friends=friends, friends_count=user.friends_count, title='Друзья')
+
+
+@app.route('/add_friend/<int:id>')
 @login_required
 def add_friend(id):
     session = create_session()

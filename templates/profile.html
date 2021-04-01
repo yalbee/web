@@ -12,7 +12,7 @@
     <br>
     <h6>Дата рождения: {{ user.birthday }}</h6>
     <h6>Родной город: {{ user.hometown }}</h6>
-    <h6>Друзей: {{ user.friends_count }}</h6>
+    <h6>Друзей: <a style="color: black;" href="/friends/{{ user.id }}">{{ user.friends_count }}</a></h6>
     <br>
     {% if user.id == current_user.id %}
         <a class="btn btn-outline-secondary" href="/redact_profile" style="width: 100%; margin-top: 2%;">Редактировать</a>
@@ -23,7 +23,7 @@
         {% if friend %}
             <a class="btn btn-outline-danger" href="/delete_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Удалить из друзей</a>
         {% else %}
-            <a class="btn btn-outline-success" href="/friends/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
+            <a class="btn btn-outline-success" href="/add_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
         {% endif %}
         <br>
     {% endif %}

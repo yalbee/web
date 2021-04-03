@@ -211,7 +211,7 @@ def delete_friend(id):
 
 
 @app.errorhandler(401)
-def not_found(error):
+def unauthorized(error):
     return redirect('/login')
 
 

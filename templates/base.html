@@ -14,7 +14,12 @@
                 <aside>
                     <p><a style="text-decoration: none; color: black;" href="/news"><h5>Новости</h5></a></p>
                     <p><a style="text-decoration: none; color: black;" href="/messages"><h5>Сообщения</h5></a></p>
-                    <p><a style="text-decoration: none; color: black;" href="/friends/{{ current_user.id }}"><h5>Друзья</h5></a></p>
+                    {% if current_user.requests_count == 0 %}
+                        <p><a style="text-decoration: none; color: black;" href="/friends/{{ current_user.id }}"><h5>Друзья</h5></a></p>
+                    {% else %}
+                        <p><a style="text-decoration: none; color: black;" href="/friends/{{ current_user.id }}"><h5>
+                            Друзья <span class="badge bg-success">{{ current_user.requests_count }}</span></h5></a></p>
+                    {% endif %}
                 </aside>
             {% endif %}
             <header class="navbar navbar-light" style="background-color: #043B27; color: #FFFFFF;">

@@ -12,5 +12,5 @@ class Friends(SqlAlchemyBase, SerializerMixin):
                            primary_key=True, autoincrement=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     friend = sqlalchemy.Column(sqlalchemy.Integer)
-    date = sqlalchemy.Column(sqlalchemy.Date, default=datetime.datetime.now())
+    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
     user = orm.relation('Users')

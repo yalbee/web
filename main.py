@@ -192,8 +192,10 @@ def add_friend(id):
         user.friends.append(friend)
         user.friends_count += 1
         my_requests.remove(str(id))
+        current_user.requests_count -= 1
     else:  # если мы отправляем запрос в друзья
         user_requests.append(str(current_user.id))
+        user.requests_count += 1
     current_user.friend_requests, user.friend_requests = ' '.join(my_requests), ' '.join(user_requests)
     session.merge(current_user)
     session.merge(user)
@@ -208,6 +210,7 @@ def cancel_request(id):  # отмена запроса в друзья
     user = session.query(Users).get(id)
     requests = user.friend_requests.split()
     requests.remove(str(current_user.id))
+    user.requests_count -= 1
     user.friend_requests = ' '.join(requests)
     session.merge(user)
     session.commit()

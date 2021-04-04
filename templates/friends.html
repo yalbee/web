@@ -2,6 +2,15 @@
 
 {% block content %}
 <div class="block">
+    {% if requests %}
+        <h3 style="text-align: center;">Запросы</h3>
+        {% for user in requests %}
+            <div class="alert alert-success" role="alert" style="margin: 1%;">
+                <h3><a href="/users/{{ user.id }}" style="text-decoration: none; color: black;">{{ user.name }} {{ user.surname }}</a></h3>
+                <a class="btn btn-success" href="/add_friend/{{ user.id }}">Добавить в друзья</a>
+            </div>
+        {% endfor %}
+    {% endif %}
     <h1>друзья</h1>
     <br>
     {% if friends %}

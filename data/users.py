@@ -22,6 +22,7 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
     image = sqlalchemy.Column(sqlalchemy.String, default='/static/img/0.jpeg')
     friends_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    friend_requests = sqlalchemy.Column(sqlalchemy.String, default='')
     news = orm.relation("News", back_populates='user')
     friends = orm.relation("Friends", back_populates='user')
 

@@ -23,7 +23,11 @@
         {% if friend %}
             <a class="btn btn-outline-danger" href="/delete_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Удалить из друзей</a>
         {% else %}
-            <a class="btn btn-outline-success" href="/add_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
+            {% if request %}
+                <a class="btn btn-outline-danger" href="/cancel_request/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отменить запрос</a>
+            {% else %}
+                <a class="btn btn-outline-success" href="/add_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
+            {% endif %}
         {% endif %}
         <br>
     {% endif %}

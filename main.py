@@ -100,8 +100,9 @@ def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
     title = f'{user.name} {user.surname}'
-    friend = session.query(Friends).filter(Friends.friend == id).first()
-    return render_template('profile.html', title=title, user=user, friend=friend)
+    friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
+    request = bool(str(current_user.id) in user.friend_requests.split())
+    return render_template('profile.html', title=title, user=user, friend=friend, request=request)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -124,17 +125,6 @@ def redact_profile():
         session.commit()
         return redirect(f'/users/{current_user.id}')
     return render_template('redact_profile.html', title='Редактировать профиль', form=form)
-
-
-@app.route('/delete_profile')
-@login_required
-def delete_profile():
-    session = create_session()
-    user = session.query(Users).get(current_user.id)
-    logout_user()
-    session.delete(user)
-    session.commit()
-    return redirect('/')
 
 
 @app.route('/create_news', methods=['GET', 'POST'])
@@ -178,22 +168,48 @@ def delete_new(id):
 @app.route('/friends/<int:id>')
 @login_required
 def friends(id):
-    session, friends = create_session(), []
+    session, friends, requests = create_session(), [], []
     user = session.query(Users).get(id)
     for friend in user.friends:
         friends.append(session.query(Users).get(friend.friend))
-    return render_template('friends.html', friends=friends, friends_count=user.friends_count, title='Друзья')
+    if user.id == current_user.id:
+        for id in current_user.friend_requests.split():
+            requests.append(session.query(Users).get(id))
+    return render_template('friends.html', friends=friends, requests=requests, friends_count=user.friends_count, title='Друзья')
 
 
 @app.route('/add_friend/<int:id>')
 @login_required
 def add_friend(id):
     session = create_session()
-    friend = Friends()
-    friend.friend = id
-    current_user.friends.append(friend)
-    current_user.friends_count += 1
+    user = session.query(Users).get(id)
+    my_requests, user_requests = current_user.friend_requests.split(), user.friend_requests.split()
+    if str(id) in my_requests:  # если мы принимаем запрос в друзья
+        friend = Friends(friend=id)
+        current_user.friends.append(friend)
+        current_user.friends_count += 1
+        friend = Friends(friend=current_user.id)
+        user.friends.append(friend)
+        user.friends_count += 1
+        my_requests.remove(str(id))
+    else:  # если мы отправляем запрос в друзья
+        user_requests.append(str(current_user.id))
+    current_user.friend_requests, user.friend_requests = ' '.join(my_requests), ' '.join(user_requests)
     session.merge(current_user)
+    session.merge(user)
+    session.commit()
+    return redirect(f'/users/{id}')
+
+
+@app.route('/cancel_request/<int:id>')
+@login_required
+def cancel_request(id):  # отмена запроса в друзья
+    session = create_session()
+    user = session.query(Users).get(id)
+    requests = user.friend_requests.split()
+    requests.remove(str(current_user.id))
+    user.friend_requests = ' '.join(requests)
+    session.merge(user)
     session.commit()
     return redirect(f'/users/{id}')
 
@@ -202,10 +218,15 @@ def add_friend(id):
 @login_required
 def delete_friend(id):
     session = create_session()
+    user = session.query(Users).get(id)
     friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
     session.delete(friend)
     current_user.friends_count -= 1
+    friend = session.query(Friends).filter(Friends.user_id == id, Friends.friend == current_user.id).first()
+    session.delete(friend)
+    user.friends_count -= 1
     session.merge(current_user)
+    session.merge(user)
     session.commit()
     return redirect(f'/users/{id}')
 

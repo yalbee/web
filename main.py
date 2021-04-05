@@ -4,6 +4,8 @@ from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
 from data.friends import Friends
+from data.chats import Chats
+from data.messages import Messages
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
@@ -91,7 +93,8 @@ def logout():
 def show_news():
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id)
-    return render_template('news.html', title='Новости', news=news)
+    liked = [int(id) for id in current_user.liked_news.split()]
+    return render_template('news.html', title='Новости', news=news, liked=liked)
 
 
 @app.route('/users/<id>')
@@ -102,7 +105,8 @@ def profile(id):
     title = f'{user.name} {user.surname}'
     friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
     request = bool(str(current_user.id) in user.friend_requests.split())
-    return render_template('profile.html', title=title, user=user, friend=friend, request=request)
+    liked = [int(id) for id in current_user.liked_news.split()]
+    return render_template('profile.html', title=title, user=user, friend=friend, request=request, liked=liked)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -163,6 +167,46 @@ def delete_new(id):
     session.delete(new)
     session.commit()
     return redirect(f'/users/{current_user.id}')
+
+
+@app.route('/like/<int:id>')
+@login_required
+def like(id):
+    session = create_session()
+    new = session.query(News).get(id)
+    new.likes += 1
+    liked = current_user.liked_news.split()
+    liked.append(str(id))
+    current_user.liked_news = ' '.join(liked)
+    session.merge(current_user)
+    session.merge(new)
+    session.commit()
+    return redirect('/liked_news')
+
+
+@app.route('/unlike/<int:id>')
+@login_required
+def unlike(id):
+    session = create_session()
+    new = session.query(News).get(id)
+    new.likes -= 1
+    liked = current_user.liked_news.split()
+    liked.remove(str(id))
+    current_user.liked_news = ' '.join(liked)
+    session.merge(current_user)
+    session.merge(new)
+    session.commit()
+    return redirect('/liked_news')
+
+
+@app.route('/liked_news')
+@login_required
+def liked_news():
+    session, news = create_session(), []
+    for id in current_user.liked_news.split():
+        news.append(session.query(News).get(id))
+    liked = [int(id) for id in current_user.liked_news.split()]
+    return render_template('news.html', title='Понравившееся', news=news, liked=liked)
 
 
 @app.route('/friends/<int:id>')

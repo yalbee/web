@@ -2,10 +2,15 @@
 
 {% block content %}
 <div class="block">
-    <h1>новости</h1>
-    <br>
-    <a class="btn btn-success" href="/create_news" style="width: 80%; margin-left: 10%;">Создать запись</a>
-    <br>
+    <h1>{{ title }}</h1>
+    {% if title == 'Новости' %}
+        <br>
+        <a class="btn btn-success" href="/create_news" style="width: 80%; margin-left: 10%;">Создать запись</a>
+        <br>
+    {% endif %}
+    {% if not news %}
+        <h6>пусто....</h6>
+    {% endif %}
     {% for new in news %}
         <br>
         <div class="alert alert-success" role="alert" style="margin: 1%;">
@@ -17,6 +22,12 @@
                 {{ new.content }}
             </textarea>
             <p style="text-align: right">{{ new.date }}</p>
+            {% if new.id in liked %}
+                <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a>
+            {% else %}
+                <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a>
+            {% endif %}
+            <h6 style="text-align: right;">{{ new.likes }}</h6>
         </div>
     {% endfor %}
 </div>

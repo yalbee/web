@@ -44,7 +44,14 @@
             <p style="text-align: right">{{ new.date }}</p>
             {% if user.id == current_user.id %}
                 <a class="btn btn-success" href="/news/{{ new.id }}">Редактировать</a>
+            {% else %}
+                {% if new.id in liked %}
+                    <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a>
+                {% else %}
+                    <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a>
+                {% endif %}
             {% endif %}
+            <h6 style="text-align: right;">{{ new.likes }}</h6>
         </div>
     {% endfor %}
 </div>

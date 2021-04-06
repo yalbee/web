@@ -3,10 +3,8 @@
 {% block content %}
 <div class="block">
     <h1>{{ title }}</h1>
-    {% if not current_user.chats %}
-        <br>
-        <h6>чтобы создать чат с пользователем, отправьте ему сообщение</h6>
-    {% endif %}
+    <br>
+    <a class="btn btn-success" href="/create_chat" style="width: 80%; margin-left: 10%;">Создать чат</a>
     {% for chat in current_user.chats %}
         <br>
         <div class="chat">

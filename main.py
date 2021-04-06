@@ -219,7 +219,8 @@ def friends(id):
     if user.id == current_user.id:
         for id in current_user.friend_requests.split():
             requests.append(session.query(Users).get(id))
-    return render_template('friends.html', friends=friends, requests=requests, friends_count=user.friends_count, title='Друзья')
+    return render_template('friends.html', friends=friends, requests=requests,
+                           friends_count=user.friends_count, title='Друзья')
 
 
 @app.route('/add_friend/<int:id>')

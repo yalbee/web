@@ -2,7 +2,8 @@
 
 {% block content %}
 <div class="block">
-    <a href="{{ user.image }}"><img src="{{ user.image }}" width=280px height=280px align="left"></a>
+    <a href="{{ user.image }}"><img src="{{ user.image }}" width=28% height=280px
+                                    align="left" style="object-fit: fill;"></a>
     <br>
     <h3 style="text-align: center;">{{ title }}</h3>
     <textarea class="profile" disabled>

@@ -16,6 +16,12 @@ div.block {
     background-color: #FFFFFF;
 }
 
+div.chat {
+    margin: 1%;
+    border: 1px solid grey;
+    border-radius: 10px;
+}
+
 aside {
     padding-top: 6%;
     position: fixed;

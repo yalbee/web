@@ -10,6 +10,7 @@ from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
+from data.forms.message import MessageForm
 from PIL import Image, UnidentifiedImageError
 import random
 
@@ -62,7 +63,7 @@ def reqister():
         db_sess.add(user)
         db_sess.commit()
         login_user(user)
-        return redirect('/')
+        return redirect(f'/users/{current_user.id}')
     return render_template('register.html', title='Регистрация', form=form)
 
 
@@ -86,15 +87,6 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
-
-
-@app.route('/news')
-@login_required
-def show_news():
-    session = create_session()
-    news = session.query(News).filter(News.creator != current_user.id)
-    liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('news.html', title='Новости', news=news, liked=liked)
 
 
 @app.route('/users/<id>')
@@ -129,6 +121,15 @@ def redact_profile():
         session.commit()
         return redirect(f'/users/{current_user.id}')
     return render_template('redact_profile.html', title='Редактировать профиль', form=form)
+
+
+@app.route('/news')
+@login_required
+def show_news():
+    session = create_session()
+    news = session.query(News).filter(News.creator != current_user.id)
+    liked = [int(id) for id in current_user.liked_news.split()]
+    return render_template('news.html', title='Новости', news=news, liked=liked)
 
 
 @app.route('/create_news', methods=['GET', 'POST'])
@@ -277,6 +278,12 @@ def delete_friend(id):
     session.merge(user)
     session.commit()
     return redirect(f'/users/{id}')
+
+
+@app.route('/chats')
+@login_required
+def chats():
+    return render_template('chats.html', title='Сообщения')
 
 
 @app.errorhandler(401)

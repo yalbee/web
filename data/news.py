@@ -13,5 +13,5 @@ class News(SqlAlchemyBase, SerializerMixin):
     creator = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.id'))
     content = sqlalchemy.Column(sqlalchemy.String)
     likes = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    date = sqlalchemy.Column(sqlalchemy.Date, default=datetime.datetime.now())
+    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
     user = orm.relation('Users')

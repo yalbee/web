@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block">
+    <h1>{{ title }}</h1>
+    {% if not current_user.chats %}
+        <br>
+        <h6>чтобы создать чат с пользователем, отправьте ему сообщение</h6>
+    {% endif %}
+    {% for chat in current_user.chats %}
+        <br>
+        <div class="chat">
+            <h3>{{ chat.name }}</h3>
+            <hr>
+            <p>{{ chat.last_message }}</p>
+            <h6 style="text-align: right;"> {{ chat.last_message_dt }}</h6>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

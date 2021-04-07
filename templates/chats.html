@@ -5,14 +5,17 @@
     <h1>{{ title }}</h1>
     <br>
     <a class="btn btn-success" href="/create_chat" style="width: 80%; margin-left: 10%;">Создать чат</a>
+    <br>
     {% for chat in current_user.chats %}
         <br>
-        <div class="chat">
+        <a href="/messages/{{ chat.id }}" style="text-decoration: none; color: black;"><div class="chat">
             <h3>{{ chat.name }}</h3>
-            <hr>
-            <p>{{ chat.last_message }}</p>
-            <h6 style="text-align: right;"> {{ chat.last_message_dt }}</h6>
-        </div>
+            {% if chat.last_message %}
+                <hr>
+                <p>{{ chat.last_message }}</p>
+                <h6 style="text-align: right;">{{ chat.last_message_dt }}</h6>
+            {% endif %}
+        </div></a>
     {% endfor %}
 </div>
 {% endblock %}

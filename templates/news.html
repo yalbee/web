@@ -22,13 +22,13 @@
             <textarea class="new" disabled>
                 {{ new.content }}
             </textarea>
-            <p style="text-align: right">{{ new.date }}</p>
+            <h6 style="text-align: right;">{{ new.date }}</h6>
             {% if new.id in liked %}
                 <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a>
             {% else %}
                 <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a>
             {% endif %}
-            <h6 style="text-align: right;">{{ new.likes }}</h6>
+            <h6 style="position: absolute; bottom: 5%; right: 5%;">{{ new.likes }}</h6>
         </div>
     {% endfor %}
 </div>

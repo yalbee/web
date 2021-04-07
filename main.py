@@ -286,6 +286,36 @@ def chats():
     return render_template('chats.html', title='Сообщения')
 
 
+@app.route('/send_message/<int:id>', methods=['GET', 'POST'])
+@login_required
+def send_message(id):
+    form = MessageForm()
+    if form.validate_on_submit():
+        session = create_session()
+        user, chat = session.query(Users).get(id), None
+        for my_chat in current_user.chats:
+            if user in my_chat.users and my_chat.private is True:
+                chat = my_chat
+                break
+        if not chat:  # если чат новый
+            user = session.query(Users).get(id)
+            chat = Chats(name=f'{user.name}, {current_user.name}', private=True, users=[current_user, user])
+            current_user.chats.append(chat)
+            user.chats.append(chat)
+            session.add(chat)
+        message = Messages(message=form.message.data)
+        session.add(message)
+        chat.messages.append(message)
+        chat.last_message = message.message
+        chat.last_message_dt = message.datetime
+        session.merge(chat)
+        session.merge(current_user)
+        session.merge(user)
+        session.commit()
+        return redirect(f'/messages/{chat.id}')
+    return render_template('send_message.html', title='Отправить сообщение', form=form)
+
+
 @app.errorhandler(401)
 def unauthorized(error):
     return redirect('/login')

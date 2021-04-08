@@ -91,11 +91,12 @@ def logout():
 def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
+    news = session.query(News).filter(News.creator == id).order_by(News.date.desc())
     title = f'{user.name} {user.surname}'
     friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
     request = bool(str(current_user.id) in user.friend_requests.split())
     liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('profile.html', title=title, user=user, friend=friend, request=request, liked=liked)
+    return render_template('profile.html', title=title, user=user, news=news, friend=friend, request=request, liked=liked)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -124,7 +125,7 @@ def redact_profile():
 @login_required
 def show_news():
     session = create_session()
-    news = session.query(News).filter(News.creator != current_user.id)
+    news = session.query(News).filter(News.creator != current_user.id).order_by(News.date.desc())
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Новости', news=news, liked=liked)
 

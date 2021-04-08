@@ -2,7 +2,6 @@ import sqlalchemy
 from .db_session import SqlAlchemyBase
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm
-import datetime
 
 
 class Messages(SqlAlchemyBase, SerializerMixin):
@@ -10,7 +9,8 @@ class Messages(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
+    chat_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('chats.id'))
     user_id = sqlalchemy.Column(sqlalchemy.Integer)  # id отправителя
     message = sqlalchemy.Column(sqlalchemy.String)
-    datetime = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
+    datetime = sqlalchemy.Column(sqlalchemy.DateTime)
     chat = orm.relation('Chats')

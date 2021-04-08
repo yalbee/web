@@ -10,6 +10,7 @@ from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
 from PIL import Image, UnidentifiedImageError
 import random
+import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -115,6 +116,8 @@ def redact_profile():
             except UnidentifiedImageError:
                 return render_template('redact_profile.html', title='Редактировать профиль',
                                        form=form, message='Это не фотография...')
+        user.hometown = form.hometown.data
+        user.birthday = form.birthday.data
         user.about = form.about.data
         session.commit()
         return redirect(f'/users/{current_user.id}')
@@ -130,6 +133,22 @@ def show_news():
     return render_template('news.html', title='Новости', news=news, liked=liked)
 
 
+@app.route('/categories')
+@login_required
+def categories():
+    return render_template('categories.html', title='Категории')
+
+
+@app.route('/news/<category>')
+@login_required
+def news_by_category(category):
+    session = create_session()
+    news = session.query(News).filter(News.creator != current_user.id,
+                                      News.category == category).order_by(News.date.desc())
+    liked = [int(id) for id in current_user.liked_news.split()]
+    return render_template('news.html', title=category, news=news, liked=liked)
+
+
 @app.route('/create_news', methods=['GET', 'POST'])
 @login_required
 def create_new():
@@ -137,7 +156,8 @@ def create_new():
     if form.validate_on_submit():
         session = create_session()
         new = News(creator=current_user.id, title=form.title.data,
-                   category=form.category.data, content=form.content.data)
+                   category=form.category.data, content=form.content.data,
+                   date=datetime.datetime.now())
         session.add(new)
         session.commit()
         return redirect(f'/users/{current_user.id}')
@@ -205,6 +225,8 @@ def liked_news():
     session, news = create_session(), []
     for id in current_user.liked_news.split():
         news.append(session.query(News).get(id))
+    news = sorted(news, key=lambda x: x.date)
+    news.reverse()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Понравившееся', news=news, liked=liked)
 

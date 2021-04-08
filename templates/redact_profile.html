@@ -14,6 +14,24 @@
         {% endfor %}
     </p>
     <p>
+        {{ form.hometown.label }}<br>
+        {{ form.hometown(class="form-control") }}<br>
+        {% for error in form.hometown.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.birthday.label }}<br>
+        {{ form.birthday(class="form-control") }}<br>
+        {% for error in form.birthday.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </p>
+    <p>
         {{ form.about.label }}<br>
         {{ form.about(class="form-control") }}<br>
         {% for error in form.about.errors %}

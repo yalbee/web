@@ -4,7 +4,6 @@ from flask_login import UserMixin
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
-import datetime
 
 
 class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
@@ -19,7 +18,6 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     about = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     hometown = sqlalchemy.Column(sqlalchemy.String)
     birthday = sqlalchemy.Column(sqlalchemy.Date)
-    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
     image = sqlalchemy.Column(sqlalchemy.String, default='/static/img/0.jpeg')
     friends_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)  # количество друзей
     friend_requests = sqlalchemy.Column(sqlalchemy.String, default='')  # запросы в друзья

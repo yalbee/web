@@ -27,6 +27,7 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     liked_news = sqlalchemy.Column(sqlalchemy.String, default='')  # понравившиеся записи
     news = orm.relation("News", back_populates='user')
     friends = orm.relation("Friends", back_populates='user')
+    chats = orm.relation("Chats", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

@@ -13,7 +13,6 @@
             {% if current_user.is_authenticated %}
                 <aside>
                     <p><a style="text-decoration: none; color: black;" href="/news"><h5>Новости</h5></a></p>
-                    <p><a style="text-decoration: none; color: black;" href="/chats"><h5>Сообщения</h5></a></p>
                     {% if current_user.requests_count == 0 %}
                         <p><a style="text-decoration: none; color: black;" href="/friends/{{ current_user.id }}"><h5>Друзья</h5></a></p>
                     {% else %}

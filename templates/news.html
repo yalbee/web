@@ -14,21 +14,26 @@
     {% endif %}
     {% for new in news %}
         <br>
-        <div class="alert alert-success" role="alert" style="margin: 1%;">
+        <div class="content">
+            <h3 style="text-align: center">{{ new.title }}</h3>
             <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
                 <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
             </a>
             <hr>
+            <h6 style="text-align: right">{{ new.category }}</h6>
             <textarea class="new" disabled>
                 {{ new.content }}
             </textarea>
             <h6 style="text-align: right;">{{ new.date }}</h6>
             {% if new.id in liked %}
-                <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a>
+                <h6 style="text-align: left;">
+                    <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a> {{ new.likes }}
+                </h6>
             {% else %}
-                <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a>
+                <h6 style="text-align: left;">
+                    <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a> {{ new.likes }}
+                </h6>
             {% endif %}
-            <h6 style="position: absolute; bottom: 5%; right: 5%;">{{ new.likes }}</h6>
         </div>
     {% endfor %}
 </div>

@@ -12,7 +12,7 @@
     <br>
     <br>
     <h6>Дата рождения: {{ user.birthday }}</h6>
-    <h6>Родной город: {{ user.hometown }}</h6>
+    <h6>Город: {{ user.hometown }}</h6>
     <h6>Друзей: <a style="color: black;" href="/friends/{{ user.id }}">{{ user.friends_count }}</a></h6>
     <br>
     {% if user.id == current_user.id %}
@@ -20,7 +20,6 @@
         <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% else %}
-        <a class="btn btn-outline-primary" href="/send_message/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отправить сообщение</a>
         {% if friend %}
             <a class="btn btn-outline-danger" href="/delete_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Удалить из друзей</a>
         {% else %}
@@ -34,25 +33,32 @@
     {% endif %}
     {% for new in user.news %}
         <br>
-        <div class="alert alert-success" role="alert" style="margin: 1%;">
+        <div class="content">
+            <h3 style="text-align: center">{{ new.title }}</h3>
             <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
-                <h4 class="alert-heading">{{ title }}</h4>
+                <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
             </a>
             <hr>
+            <h6 style="text-align: right">{{ new.category }}</h6>
             <textarea class="new" disabled>
                 {{ new.content }}
             </textarea>
             <h6 style="text-align: right;">{{ new.date }}</h6>
             {% if user.id == current_user.id %}
-                <a class="btn btn-primary" href="/news/{{ new.id }}">Редактировать</a>
+                <h6 style="text-align: left;">
+                    <a class="btn btn-primary" href="/news/{{ new.id }}">Редактировать</a> {{ new.likes }}
+                </h6>
             {% else %}
                 {% if new.id in liked %}
-                    <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a>
+                    <h6 style="text-align: left;">
+                        <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a> {{ new.likes }}
+                    </h6>
                 {% else %}
-                    <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a>
+                    <h6 style="text-align: left;">
+                        <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a> {{ new.likes }}
+                    </h6>
                 {% endif %}
             {% endif %}
-            <h6 style="position: absolute; bottom: 5%; right: 5%;">{{ new.likes }}</h6>
         </div>
     {% endfor %}
 </div>

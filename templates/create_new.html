@@ -1,9 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Создать запись</h1>
+<h1>{{ title }}</h1>
 <form action="" method="post" style="max-width: 40%; margin-bottom: 100px;">
     {{ form.hidden_tag() }}
+    <p>
+        {{ form.title.label }}
+        {{ form.title(class="form-control") }}<br>
+        {% for error in form.title.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.category.label }}
+        {{ form.category(class="form-control") }}<br>
+        {% for error in form.category.errors %}
+            <div class="alert alert-danger" role="alert">
+                {{ error }}
+            </div>
+        {% endfor %}
+    </p>
     <p>
         {{ form.content(class="form-control") }}<br>
         {% for error in form.content.errors %}
@@ -12,6 +30,11 @@
             </div>
         {% endfor %}
     </p>
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <p>
+        {{ form.submit(type="submit", class="btn btn-primary") }}
+        {% if title == 'Редактировать запись' %}
+            <a class="btn btn-danger" href="/delete_new/{{ id }}" style="margin-left: 85%;">Удалить новость</a>
+        {% endif %}
+    </p>
 </form>
 {% endblock %}

@@ -4,13 +4,10 @@ from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
 from data.friends import Friends
-from data.chats import Chats
-from data.messages import Messages
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
-from data.forms.message import MessageForm
 from PIL import Image, UnidentifiedImageError
 import random
 
@@ -138,13 +135,12 @@ def create_new():
     form = NewForm()
     if form.validate_on_submit():
         session = create_session()
-        new = News()
-        new.creator = current_user.id
-        new.content = form.content.data
+        new = News(creator=current_user.id, title=form.title.data,
+                   category=form.category.data, content=form.content.data)
         session.add(new)
         session.commit()
         return redirect(f'/users/{current_user.id}')
-    return render_template('create_new.html', title='Создать новость', form=form)
+    return render_template('create_new.html', title='Создать запись', form=form)
 
 
 @app.route('/news/<int:id>', methods=['GET', 'POST'])
@@ -154,10 +150,12 @@ def redact_new(id):
     if form.validate_on_submit():
         session = create_session()
         new = session.query(News).get(id)
+        new.title = form.title.data
+        new.category = form.category.data
         new.content = form.content.data
         session.commit()
         return redirect(f'/users/{current_user.id}')
-    return render_template('redact_new.html', title='Редактировать запись', form=form, id=id)
+    return render_template('create_new.html', title='Редактировать запись', form=form, id=id)
 
 
 @app.route('/delete_new/<int:id>')
@@ -278,42 +276,6 @@ def delete_friend(id):
     session.merge(user)
     session.commit()
     return redirect(f'/users/{id}')
-
-
-@app.route('/chats')
-@login_required
-def chats():
-    return render_template('chats.html', title='Сообщения')
-
-
-@app.route('/send_message/<int:id>', methods=['GET', 'POST'])
-@login_required
-def send_message(id):
-    form = MessageForm()
-    if form.validate_on_submit():
-        session = create_session()
-        user, chat = session.query(Users).get(id), None
-        for my_chat in current_user.chats:
-            if user in my_chat.users and my_chat.private is True:
-                chat = my_chat
-                break
-        if not chat:  # если чат новый
-            user = session.query(Users).get(id)
-            chat = Chats(name=f'{user.name}, {current_user.name}', private=True, users=[current_user, user])
-            current_user.chats.append(chat)
-            user.chats.append(chat)
-            session.add(chat)
-        message = Messages(message=form.message.data)
-        session.add(message)
-        chat.messages.append(message)
-        chat.last_message = message.message
-        chat.last_message_dt = message.datetime
-        session.merge(chat)
-        session.merge(current_user)
-        session.merge(user)
-        session.commit()
-        return redirect(f'/messages/{chat.id}')
-    return render_template('send_message.html', title='Отправить сообщение', form=form)
 
 
 @app.errorhandler(401)

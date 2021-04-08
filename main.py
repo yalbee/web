@@ -128,7 +128,7 @@ def redact_profile():
 @login_required
 def show_news():
     session = create_session()
-    news = session.query(News).filter(News.creator != current_user.id).order_by(News.date.desc())
+    news = session.query(News).filter(News.creator != current_user.id).order_by(News.date.desc()).all()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Новости', news=news, liked=liked)
 
@@ -144,7 +144,7 @@ def categories():
 def news_by_category(category):
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id,
-                                      News.category == category).order_by(News.date.desc())
+                                      News.category == category).order_by(News.date.desc()).all()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title=category, news=news, liked=liked)
 

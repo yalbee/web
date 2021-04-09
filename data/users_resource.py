@@ -6,18 +6,18 @@ import datetime
 
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('password', required=True)
-put_parser.add_argument('about')
+put_parser.add_argument('about', required=True)
 put_parser.add_argument('hometown', required=True)
-put_parser.add_argument('birthday', required=True, type=datetime.date)
+put_parser.add_argument('birthday', required=True)
 
 post_parser = reqparse.RequestParser()
 post_parser.add_argument('surname', required=True)
 post_parser.add_argument('name', required=True)
 post_parser.add_argument('email', required=True)
 post_parser.add_argument('password', required=True)
-post_parser.add_argument('about')
+post_parser.add_argument('about', required=True)
 post_parser.add_argument('hometown', required=True)
-post_parser.add_argument('birthday', required=True, type=datetime.date)
+post_parser.add_argument('birthday', required=True, help='date format: d/m/Y')
 
 
 def abort_if_not_found(id):
@@ -42,7 +42,11 @@ class UsersResource(Resource):
         user = session.query(Users).get(id)
         user.about = args['about']
         user.hometown = args['hometown']
-        user.birthday = args['birthday']
+        try:
+            date = datetime.datetime.strptime(args['birthday'], '%d/%m/%Y')
+            user.birthday = date.date()
+        except ValueError:
+            return jsonify({'error': 'wrong date'})
         user.set_password(args['password'])
         session.merge(user)
         session.commit()
@@ -66,8 +70,12 @@ class UsersListResource(Resource):
                      name=args['name'],
                      email=args['email'],
                      about=args['about'],
-                     hometown=args['hometown'],
-                     birthday=args['birthday'])
+                     hometown=args['hometown'])
+        try:
+            date = datetime.datetime.strptime(args['birthday'], '%d/%m/%Y')
+            user.birthday = date.date()
+        except ValueError:
+            return jsonify({'error': 'wrong date'})
         user.set_password(args['password'])
         session.add(user)
         session.commit()

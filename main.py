@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, jsonify, make_response
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
+from flask_restful import Api
 from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
@@ -8,11 +9,15 @@ from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
+from data.users_resource import UsersResource, UsersListResource
 from PIL import Image, UnidentifiedImageError
 import random
 import datetime
 
 app = Flask(__name__)
+api = Api(app)
+api.add_resource(UsersResource, '/api/users/<int:id>')
+api.add_resource(UsersListResource, '/api/users')
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)

@@ -92,7 +92,7 @@ def logout():
 def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
-    news = session.query(News).filter(News.creator == id).order_by(News.date.desc())
+    news = session.query(News).filter(News.creator == id).order_by(News.datetime.desc())
     title = f'{user.name} {user.surname}'
     friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
     request = bool(str(current_user.id) in user.friend_requests.split())
@@ -128,7 +128,7 @@ def redact_profile():
 @login_required
 def show_news():
     session = create_session()
-    news = session.query(News).filter(News.creator != current_user.id).order_by(News.date.desc()).all()
+    news = session.query(News).filter(News.creator != current_user.id).order_by(News.datetime.desc()).all()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Новости', news=news, liked=liked)
 
@@ -144,7 +144,7 @@ def categories():
 def news_by_category(category):
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id,
-                                      News.category == category).order_by(News.date.desc()).all()
+                                      News.category == category).order_by(News.datetime.desc()).all()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title=category, news=news, liked=liked)
 
@@ -157,7 +157,8 @@ def create_new():
         session = create_session()
         new = News(creator=current_user.id, title=form.title.data,
                    category=form.category.data, content=form.content.data,
-                   date=datetime.datetime.now())
+                   datetime=datetime.datetime.now())
+        new.string_dt = new.datetime.strftime('%m/%d %H:%M')
         session.add(new)
         session.commit()
         return redirect(f'/users/{current_user.id}')
@@ -225,7 +226,7 @@ def liked_news():
     session, news = create_session(), []
     for id in current_user.liked_news.split():
         news.append(session.query(News).get(id))
-    news = sorted(news, key=lambda x: x.date)
+    news = sorted(news, key=lambda x: x.datetime)
     news.reverse()
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Понравившееся', news=news, liked=liked)

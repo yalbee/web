@@ -43,7 +43,7 @@
             <textarea class="new" disabled>
                 {{ new.content }}
             </textarea>
-            <h6 style="text-align: right;">{{ new.date }}</h6>
+            <h6 style="text-align: right;">{{ new.string_dt }}</h6>
             {% if user.id == current_user.id %}
                 <h6 style="text-align: left;">
                     <a class="btn btn-primary" href="/news/{{ new.id }}">Редактировать</a> {{ new.likes }}

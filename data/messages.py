@@ -13,4 +13,5 @@ class Messages(SqlAlchemyBase, SerializerMixin):
     user_id = sqlalchemy.Column(sqlalchemy.Integer)  # id отправителя
     message = sqlalchemy.Column(sqlalchemy.String)
     datetime = sqlalchemy.Column(sqlalchemy.DateTime)
+    string_dt = sqlalchemy.Column(sqlalchemy.String)
     chat = orm.relation('Chats')

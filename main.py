@@ -9,6 +9,7 @@ from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
+from data.forms.change_password import ChangePasswordForm
 from data.users_resource import UsersResource, UsersListResource
 from PIL import Image, UnidentifiedImageError
 import random
@@ -127,6 +128,23 @@ def redact_profile():
         session.commit()
         return redirect(f'/users/{current_user.id}')
     return render_template('redact_profile.html', title='Редактировать профиль', form=form)
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('change_password.html', title='Смена пароля',
+                                   form=form,
+                                   message="Пароли не совпадают")
+        session = create_session()
+        current_user.set_password(form.password.data)
+        session.merge(current_user)
+        session.commit()
+        return redirect(f'/users/{current_user.id}')
+    return render_template('change_password.html', title='Смена пароля', form=form)
 
 
 @app.route('/news')

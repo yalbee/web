@@ -4,14 +4,20 @@ from .db_session import create_session
 from .users import Users
 import datetime
 
-parser = reqparse.RequestParser()
-parser.add_argument('surname', required=True)
-parser.add_argument('name', required=True)
-parser.add_argument('email', required=True)
-parser.add_argument('password', required=True)
-parser.add_argument('about')
-parser.add_argument('hometown', required=True)
-parser.add_argument('birthday', required=True, type=datetime.date)
+put_parser = reqparse.RequestParser()
+put_parser.add_argument('password', required=True)
+put_parser.add_argument('about')
+put_parser.add_argument('hometown', required=True)
+put_parser.add_argument('birthday', required=True, type=datetime.date)
+
+post_parser = reqparse.RequestParser()
+post_parser.add_argument('surname', required=True)
+post_parser.add_argument('name', required=True)
+post_parser.add_argument('email', required=True)
+post_parser.add_argument('password', required=True)
+post_parser.add_argument('about')
+post_parser.add_argument('hometown', required=True)
+post_parser.add_argument('birthday', required=True, type=datetime.date)
 
 
 def abort_if_not_found(id):
@@ -31,17 +37,16 @@ class UsersResource(Resource):
 
     def put(self, id):
         abort_if_not_found(id)
-        args = parser.parse_args()
+        args = put_parser.parse_args()
         session = create_session()
         user = session.query(Users).get(id)
-        user.surname = args['surname']
-        user.name = args['name']
-        user.email = args['email']
         user.about = args['about']
         user.hometown = args['hometown']
         user.birthday = args['birthday']
+        user.set_password(args['password'])
         session.merge(user)
         session.commit()
+        return jsonify({'success': 'ok'})
 
 
 class UsersListResource(Resource):
@@ -53,8 +58,10 @@ class UsersListResource(Resource):
                   'hometown', 'birthday', 'about')) for user in users]})
 
     def post(self):
-        args = parser.parse_args()
+        args = post_parser.parse_args()
         session = create_session()
+        if session.query(Users).filter(Users.email == args['email']).first():
+            return jsonify({'error': 'user already exists'})
         user = Users(surname=args['surname'],
                      name=args['name'],
                      email=args['email'],
@@ -64,3 +71,4 @@ class UsersListResource(Resource):
         user.set_password(args['password'])
         session.add(user)
         session.commit()
+        return jsonify({'success': 'ok'})

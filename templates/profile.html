@@ -13,21 +13,17 @@
     <br>
     <h6>Дата рождения: {{ user.birthday }}</h6>
     <h6>Город: {{ user.hometown }}</h6>
-    <h6>Друзей: <a style="color: black;" href="/friends/{{ user.id }}">{{ user.friends_count }}</a></h6>
+    <h6>Подписчиков: <a style="color: black;" href="/subscribers/{{ user.id }}">{{ user.subs_count }}</a></h6>
     <br>
     {% if user.id == current_user.id %}
         <a class="btn btn-outline-secondary" href="/redact_profile" style="width: 100%; margin-top: 2%;">Редактировать</a>
         <a class="btn btn-outline-secondary" href="/create_news" style="width: 100%; margin-top: 2%;">Создать запись</a>
         <br>
     {% else %}
-        {% if friend %}
-            <a class="btn btn-outline-danger" href="/delete_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Удалить из друзей</a>
+        {% if subscribed %}
+            <a class="btn btn-outline-danger" href="/unsubscribe/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отписаться</a>
         {% else %}
-            {% if request %}
-                <a class="btn btn-outline-danger" href="/cancel_request/{{ user.id }}" style="width: 100%; margin-top: 2%;">Отменить запрос</a>
-            {% else %}
-                <a class="btn btn-outline-success" href="/add_friend/{{ user.id }}" style="width: 100%; margin-top: 2%;">Добавить в друзья</a>
-            {% endif %}
+            <a class="btn btn-outline-success" href="/subscribe/{{ user.id }}" style="width: 100%; margin-top: 2%;">Подписаться</a>
         {% endif %}
         <br>
     {% endif %}

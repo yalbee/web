@@ -5,7 +5,7 @@ from flask_jwt_simple import JWTManager
 from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
-from data.friends import Friends
+from data.subscriptions import Subscriptions
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
@@ -107,10 +107,10 @@ def profile(id):
     user = session.query(Users).get(id)
     news = session.query(News).filter(News.creator == id).order_by(News.datetime.desc())
     title = f'{user.name} {user.surname}'
-    friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
-    request = bool(str(current_user.id) in user.friend_requests.split())
+    subscribed = session.query(Subscriptions).filter(Subscriptions.user_id == current_user.id,
+                                                     Subscriptions.sub == id).first()
     liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('profile.html', title=title, user=user, news=news, friend=friend, request=request, liked=liked)
+    return render_template('profile.html', title=title, user=user, news=news, subscribed=subscribed, liked=liked)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])
@@ -262,70 +262,55 @@ def liked_news():
     return render_template('news.html', title='Понравившееся', news=news, liked=liked)
 
 
-@app.route('/friends/<int:id>')
+@app.route('/my_subscriptions')
 @login_required
-def friends(id):
-    session, friends, requests = create_session(), [], []
+def my_subscriptions():
+    session, users = create_session(), []
+    for subscription in current_user.subscriptions:
+        users.append(session.query(Users).get(subscription.sub))
+    return render_template('subscriptions.html', users=users, title='Мои подписки')
+
+
+@app.route('/subscribers/<int:id>')
+@login_required
+def subscribers(id):
+    session, users = create_session(), []
     user = session.query(Users).get(id)
-    for friend in user.friends:
-        friends.append(session.query(Users).get(friend.friend))
-    if user.id == current_user.id:
-        for id in current_user.friend_requests.split():
-            requests.append(session.query(Users).get(id))
-    return render_template('friends.html', friends=friends, requests=requests,
-                           friends_count=user.friends_count, title='Друзья')
+    for subscriber in user.subscribers.split():
+        users.append(session.query(Users).get(int(subscriber)))
+    return render_template('subscriptions.html', users=users,
+                           subs_count=user.subs_count, title='Подписчики')
 
 
-@app.route('/add_friend/<int:id>')
+@app.route('/subscribe/<int:id>')
 @login_required
-def add_friend(id):
+def subscribe(id):
     session = create_session()
     user = session.query(Users).get(id)
-    my_requests, user_requests = current_user.friend_requests.split(), user.friend_requests.split()
-    if str(id) in my_requests:  # если мы принимаем запрос в друзья
-        friend = Friends(friend=id)
-        current_user.friends.append(friend)
-        current_user.friends_count += 1
-        friend = Friends(friend=current_user.id)
-        user.friends.append(friend)
-        user.friends_count += 1
-        my_requests.remove(str(id))
-        current_user.requests_count -= 1
-    else:  # если мы отправляем запрос в друзья
-        user_requests.append(str(current_user.id))
-        user.requests_count += 1
-    current_user.friend_requests, user.friend_requests = ' '.join(my_requests), ' '.join(user_requests)
+    subscription = Subscriptions(sub=id)
+    current_user.subscriptions.append(subscription)
+    subscribers = user.subscribers.split()
+    subscribers.append(str(current_user.id))
+    user.subscribers = ' '.join(subscribers)
+    user.subs_count += 1
     session.merge(current_user)
     session.merge(user)
     session.commit()
     return redirect(f'/users/{id}')
 
 
-@app.route('/cancel_request/<int:id>')
+@app.route('/unsubscribe/<int:id>')
 @login_required
-def cancel_request(id):  # отмена запроса в друзья
+def unsubscribe(id):
     session = create_session()
     user = session.query(Users).get(id)
-    requests = user.friend_requests.split()
-    requests.remove(str(current_user.id))
-    user.requests_count -= 1
-    user.friend_requests = ' '.join(requests)
-    session.merge(user)
-    session.commit()
-    return redirect(f'/users/{id}')
-
-
-@app.route('/delete_friend/<int:id>')
-@login_required
-def delete_friend(id):
-    session = create_session()
-    user = session.query(Users).get(id)
-    friend = session.query(Friends).filter(Friends.user_id == current_user.id, Friends.friend == id).first()
-    session.delete(friend)
-    current_user.friends_count -= 1
-    friend = session.query(Friends).filter(Friends.user_id == id, Friends.friend == current_user.id).first()
-    session.delete(friend)
-    user.friends_count -= 1
+    subscription = session.query(Subscriptions).filter(Subscriptions.user_id == current_user.id,
+                                                       Subscriptions.sub == id).first()
+    session.delete(subscription)
+    subscribers = user.subscribers.split()
+    subscribers.remove(str(current_user.id))
+    user.subscribers = ' '.join(subscribers)
+    user.subs_count -= 1
     session.merge(current_user)
     session.merge(user)
     session.commit()

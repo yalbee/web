@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="block">
+    <h1>{{ title }}</h1>
+    {% if users %}
+        {% if subs_count %}
+            <br>
+            <h6>Всего подписчиков: {{ subs_count }}</h6>
+        {% endif %}
+        {% for user in users %}
+            <br>
+            <div style="margin: 1%; padding: 1%;">
+                <img src="{{ user.image }}" width=100px height=100px align="left">
+                <h3 style="position: relative; left: 3%; top: 30px;"><a href="/users/{{ user.id }}" style="text-decoration: none; color: black;">{{ user.name }} {{ user.surname }}</a></h3>
+            </div>
+            <br>
+            <br>
+            <hr>
+        {% endfor %}
+    {% else %}
+        {% if title == 'Подписчики' %}
+            <h6>Подписчков нет((((</h6>
+        {% else %}
+            <h6>Подписок нет</h6>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

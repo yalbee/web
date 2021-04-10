@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, jsonify, make_response
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_restful import Api
+from flask_jwt_simple import JWTManager
 from data.db_session import create_session, global_init
 from data.users import Users
 from data.news import News
@@ -10,16 +11,22 @@ from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
 from data.forms.change_password import ChangePasswordForm
-from data.users_resource import UsersResource, UsersListResource
+from data.users_resource import RegisterResource, LoginResource, UsersResource, UsersListResource
 from PIL import Image, UnidentifiedImageError
 import random
 import datetime
 
 app = Flask(__name__)
 api = Api(app)
+api.add_resource(RegisterResource, '/api/register')
+api.add_resource(LoginResource, '/api/login')
 api.add_resource(UsersResource, '/api/users/<int:id>')
 api.add_resource(UsersListResource, '/api/users')
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['JWT_EXPIRES'] = datetime.timedelta(hours=48)
+app.config['JWT_IDENTITY_CLAIM'] = 'user'
+app.config['JWT_HEADER_NAME'] = 'authorization'
+app.jwt = JWTManager()
 login_manager = LoginManager()
 login_manager.init_app(app)
 global_init('db/data.db')

@@ -2,16 +2,17 @@ from flask import Flask, render_template, redirect, jsonify, make_response
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_restful import Api
 from flask_jwt_simple import JWTManager
-from data.db_session import create_session, global_init
-from data.users import Users
-from data.news import News
-from data.subscriptions import Subscriptions
+from data.models.db_session import create_session, global_init
+from data.models.users import Users
+from data.models.news import News
+from data.models.subscriptions import Subscriptions
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
 from data.forms.redact_profile import ProfileRedactForm
 from data.forms.change_password import ChangePasswordForm
 from data.users_resource import RegisterResource, LoginResource, UsersResource, UsersListResource
+from data.news_resource import NewsResource, NewsListResource
 from PIL import Image, UnidentifiedImageError
 import random
 import datetime
@@ -22,14 +23,29 @@ api.add_resource(RegisterResource, '/api/register')
 api.add_resource(LoginResource, '/api/login')
 api.add_resource(UsersResource, '/api/users/<int:id>')
 api.add_resource(UsersListResource, '/api/users')
+api.add_resource(NewsResource, '/api/news/<int:id>')
+api.add_resource(NewsListResource, '/api/news')
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['JWT_SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['JWT_EXPIRES'] = datetime.timedelta(hours=48)
 app.config['JWT_IDENTITY_CLAIM'] = 'user'
 app.config['JWT_HEADER_NAME'] = 'authorization'
 app.jwt = JWTManager()
+app.jwt.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 global_init('db/data.db')
+
+
+@app.jwt.expired_token_loader
+def expired_token_callback():
+    return jsonify({'error': 'expired token'}, 401)
+
+
+@app.jwt.unauthorized_loader
+@app.jwt.invalid_token_loader
+def unauth_inv_token_callback(why):
+    return jsonify({'error': why}, 401)
 
 
 @login_manager.user_loader

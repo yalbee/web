@@ -1,9 +1,10 @@
 from flask import jsonify
 from flask_restful import Resource, reqparse
-from .db_session import create_session
-from .users import Users
-import datetime
+from .models.db_session import create_session
+from .models.users import Users
 from .tools.tools import make_resp, create_jwt_for_user
+from flask_jwt_simple import jwt_required
+import datetime
 
 register_parser = reqparse.RequestParser()
 register_parser.add_argument('surname', required=True)
@@ -54,6 +55,7 @@ class LoginResource(Resource):
 
 
 class UsersResource(Resource):
+    @jwt_required
     def get(self, id):
         session = create_session()
         user = session.query(Users).get(id)
@@ -64,6 +66,7 @@ class UsersResource(Resource):
 
 
 class UsersListResource(Resource):
+    @jwt_required
     def get(self):
         session = create_session()
         users = session.query(Users).all()

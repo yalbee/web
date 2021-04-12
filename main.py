@@ -27,9 +27,9 @@ api.add_resource(NewsResource, '/api/news/<int:id>')
 api.add_resource(NewsListResource, '/api/news')
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['JWT_SECRET_KEY'] = 'yandexlyceum_secret_key'
-app.config['JWT_EXPIRES'] = datetime.timedelta(hours=48)
+app.config['JWT_EXPIRES'] = datetime.timedelta(hours=24)
+app.config['JWT_HEADER_TYPE'] = 'Bearer'
 app.config['JWT_IDENTITY_CLAIM'] = 'user'
-app.config['JWT_HEADER_NAME'] = 'authorization'
 app.jwt = JWTManager()
 app.jwt.init_app(app)
 login_manager = LoginManager()

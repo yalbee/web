@@ -9,4 +9,4 @@ def make_resp(message, status):
 
 
 def create_jwt_for_user(user):
-    return make_resp(jsonify({'token': create_jwt(identity=user)}), 200)
+    return make_resp(jsonify({'token': 'Bearer ' + create_jwt(identity=user)}), 200)

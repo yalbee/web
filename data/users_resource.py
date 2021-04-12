@@ -1,9 +1,8 @@
-from flask import jsonify
+from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from .models.db_session import create_session
 from .models.users import Users
-from .tools.tools import make_resp, create_jwt_for_user
-from flask_jwt_simple import jwt_required
+from flask_jwt_simple import jwt_required, create_jwt
 import datetime
 
 register_parser = reqparse.RequestParser()
@@ -20,12 +19,16 @@ login_parser.add_argument('email', required=True)
 login_parser.add_argument('password', required=True)
 
 
+def create_jwt_for_user(user):
+    return make_response(jsonify({'token': 'Bearer ' + create_jwt(identity=user)}), 200)
+
+
 class RegisterResource(Resource):
     def post(self):
         args = register_parser.parse_args()
         session = create_session()
         if session.query(Users).filter(Users.email == args['email']).first():
-            return make_resp(jsonify({'error': 'user already exists'}), 400)
+            return make_response(jsonify({'error': 'user already exists'}), 400)
         user = Users(surname=args['surname'],
                      name=args['name'],
                      email=args['email'],
@@ -35,7 +38,7 @@ class RegisterResource(Resource):
             date = datetime.datetime.strptime(args['birthday'], '%d/%m/%Y')
             user.birthday = date.date()
         except ValueError:
-            return make_resp(jsonify({'error': 'wrong date'}), 400)
+            return make_response(jsonify({'error': 'wrong date'}), 400)
         user.set_password(args['password'])
         session.add(user)
         session.commit()
@@ -51,7 +54,7 @@ class LoginResource(Resource):
         if user and user.check_password(args['password']):
             return create_jwt_for_user({'id': user.id, 'email': user.email})
         else:
-            return make_resp(jsonify({'error': 'wrong email or password'}), 400)
+            return make_response(jsonify({'error': 'wrong email or password'}), 400)
 
 
 class UsersResource(Resource):
@@ -60,7 +63,7 @@ class UsersResource(Resource):
         session = create_session()
         user = session.query(Users).get(id)
         if not user:
-            return make_resp(jsonify({'error': f'user {id} not found'}), 400)
+            return make_response(jsonify({'error': f'user {id} not found'}), 400)
         return jsonify({'user': user.to_dict(only=[
             'id', 'surname', 'name', 'hometown', 'birthday', 'about'])})
 

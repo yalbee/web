@@ -1,8 +1,7 @@
-from flask import jsonify
+from flask import jsonify, make_response
 from flask_restful import Resource, reqparse
 from .models.db_session import create_session
 from .models.news import News
-from .tools.tools import make_resp
 from flask_jwt_simple import jwt_required, get_jwt_identity
 import datetime
 
@@ -18,7 +17,7 @@ class NewsResource(Resource):
         session = create_session()
         new = session.query(News).get(id)
         if not new:
-            return make_resp(jsonify({'error': f'new {id} not found'}), 401)
+            return make_response(jsonify({'error': f'new {id} not found'}), 401)
         return jsonify({'new': new.to_dict(only=[
             'id', 'creator', 'title', 'category', 'content', 'likes', 'datetime'])})
 
@@ -27,9 +26,9 @@ class NewsResource(Resource):
         session = create_session()
         new = session.query(News).get(id)
         if not new:
-            return make_resp(jsonify({'error': f'new {id} not found'}), 401)
+            return make_response(jsonify({'error': f'new {id} not found'}), 401)
         if new.creator != get_jwt_identity()['id']:
-            return make_resp(jsonify({'error': 'you are not creator of this new'}), 401)
+            return make_response(jsonify({'error': 'you are not creator of this new'}), 401)
         session.delete(new)
         session.commit()
         return jsonify({'success': 'ok'})
@@ -40,12 +39,12 @@ class NewsResource(Resource):
         session = create_session()
         new = session.query(News).get(id)
         if not new:
-            return make_resp(jsonify({'error': f'new {id} not found'}), 401)
+            return make_response(jsonify({'error': f'new {id} not found'}), 401)
         if new.creator != get_jwt_identity()['id']:
-            return make_resp(jsonify({'error': 'you are not creator of this new'}), 401)
+            return make_response(jsonify({'error': 'you are not creator of this new'}), 401)
         if args['category'] not in ['Спорт', 'Музыка', 'Политика', 'IT',
                                     'Искусство', 'Наука', 'Юмор', 'Другое']:
-            return make_resp(jsonify({'error': 'invalid category'}), 401)
+            return make_response(jsonify({'error': 'invalid category'}), 401)
         new.title = args['title']
         new.category = args['category']
         new.content = args['content']
@@ -68,7 +67,7 @@ class NewsListResource(Resource):
         session = create_session()
         if args['category'] not in ['Спорт', 'Музыка', 'Политика', 'IT',
                                     'Искусство', 'Наука', 'Юмор', 'Другое']:
-            return make_resp(jsonify({'error': 'invalid category'}), 401)
+            return make_response(jsonify({'error': 'invalid category'}), 401)
         new = News(title=args['title'],
                    category=args['category'],
                    content=args['content'])

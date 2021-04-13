@@ -70,3 +70,9 @@ form {
     border-radius: 10px;
     background-color: #FFFFFF;
 }
+
+img.icon {
+    width: 70px;
+    height: 70px;
+    margin-right: 2%;
+}

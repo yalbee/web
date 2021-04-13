@@ -6,6 +6,7 @@
     <br>
     <div class="content">
         <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
+            <img src="{{ new.user.image }}" class="icon" align="left">
             <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
         </a>
         <hr>
@@ -14,21 +15,17 @@
             {{ new.content }}
         </textarea>
         <h6 style="text-align: right;">{{ new.string_dt }}</h6>
-        {% if new.creator == current_user.id %}
-            <h6 style="text-align: left;">
+        <h5 style="text-align: left;">
+            {% if new.creator == current_user.id %}
                 <a class="btn btn-primary" href="/redact_new/{{ new.id }}">Редактировать</a> {{ new.likes }}
-            </h6>
-        {% else %}
-            {% if liked %}
-                <h6 style="text-align: left;">
-                    <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a> {{ new.likes }}
-                </h6>
             {% else %}
-                <h6 style="text-align: left;">
+                {% if liked %}
+                    <a class="btn btn-danger" href="/unlike/{{ new.id }}">Уже не нравится</a> {{ new.likes }}
+                {% else %}
                     <a class="btn btn-success" href="/like/{{ new.id }}">Нравится</a> {{ new.likes }}
-                </h6>
+                {% endif %}
             {% endif %}
-        {% endif %}
+        </h5>
         <hr>
         <h3 style="text-align: center;">Комментарии:</h3>
     </div>

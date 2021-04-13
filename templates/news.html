@@ -16,12 +16,11 @@
         <br>
         <a href="/news/{{ new.id }}" style="text-decoration: none; color: black;"><div class="content">
             <h3 style="text-align: center">{{ new.title }}</h3>
+            <img src="{{ new.user.image }}" class="icon" align="left">
             <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
             <hr>
             <h6 style="text-align: right">{{ new.category }}</h6>
-            <h6 style="text-align: left;">
-                {{ new.likes }}
-            </h6>
+            <h5 style="text-align: left;">{{ new.likes }}</h5>
         </div></a>
     <h6 style="text-align: right; margin: 1%;">{{ new.string_dt }}</h6>
     {% endfor %}

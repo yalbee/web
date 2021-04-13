@@ -5,6 +5,7 @@ from flask_jwt_simple import JWTManager
 from data.models.db_session import create_session, global_init
 from data.models.users import Users
 from data.models.news import News
+from data.models.comments import Comments
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
@@ -120,6 +121,8 @@ def logout():
 def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
+    if not user:
+        return not_found(404)
     news = session.query(News).filter(News.creator == id).order_by(News.datetime.desc())
     title = f'{user.name} {user.surname}'
     subscribed = bool(str(id) in current_user.subscriptions.split())

@@ -1,6 +1,6 @@
 from requests import get, post, delete, put
 
-token = post('http://127.0.0.1:8080/api/login', json={'email': 'bruh@bruh', 'password': 'ee'}).json()
+token = post('http://127.0.0.1:8080/api/login', json={'email': 'aaaa@q', 'password': 'ee'}).json()
 print(token)
 print(get('http://127.0.0.1:8080/api/news', headers={'Authorization': token['token']}).json())
 print(get('http://127.0.0.1:8080/api/news/1', headers={'Authorization': token['token']}).json())

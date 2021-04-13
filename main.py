@@ -5,7 +5,6 @@ from flask_jwt_simple import JWTManager
 from data.models.db_session import create_session, global_init
 from data.models.users import Users
 from data.models.news import News
-from data.models.subscriptions import Subscriptions
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
@@ -116,15 +115,14 @@ def logout():
     return redirect("/")
 
 
-@app.route('/users/<id>')
+@app.route('/users/<int:id>')
 @login_required
 def profile(id):
     session = create_session()
     user = session.query(Users).get(id)
     news = session.query(News).filter(News.creator == id).order_by(News.datetime.desc())
     title = f'{user.name} {user.surname}'
-    subscribed = session.query(Subscriptions).filter(Subscriptions.user_id == current_user.id,
-                                                     Subscriptions.sub == id).first()
+    subscribed = bool(str(id) in current_user.subscriptions.split())
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('profile.html', title=title, user=user, news=news, subscribed=subscribed, liked=liked)
 
@@ -185,6 +183,8 @@ def show_news():
 def new(id):
     session = create_session()
     new = session.query(News).get(id)
+    if not new:
+        return not_found(404)
     liked = bool(str(id) in current_user.liked_news.split())
     return render_template('new.html', new=new, liked=liked, title=new.title)
 
@@ -200,7 +200,7 @@ def categories():
 def news_by_category(category):
     if category not in ['Спорт', 'Музыка', 'Политика', 'IT',
                         'Искусство', 'Наука', 'Юмор', 'Другое']:
-        not_found()
+        return not_found(404)
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id,
                                       News.category == category).order_by(News.datetime.desc()).all()
@@ -229,6 +229,8 @@ def create_new():
 def redact_new(id):
     session = create_session()
     new = session.query(News).get(id)
+    if not new:
+        return not_found(404)
     if current_user.id != new.creator:
         return make_response(jsonify({'error': 'you are not creator of this new'}), 403)
     form = NewForm()
@@ -246,6 +248,8 @@ def redact_new(id):
 def delete_new(id):
     session = create_session()
     new = session.query(News).get(id)
+    if not new:
+        return not_found(404)
     if current_user.id != new.creator:
         return make_response(jsonify({'error': 'you are not creator of this new'}), 403)
     session.delete(new)
@@ -258,6 +262,10 @@ def delete_new(id):
 def like(id):
     session = create_session()
     new = session.query(News).get(id)
+    if not new:
+        return not_found(404)
+    if str(id) in current_user.liked_news.split() or new.creator == current_user.id:
+        return make_response(jsonify({'error': 'bad request'}), 400)
     new.likes += 1
     liked = current_user.liked_news.split()
     liked.append(str(id))
@@ -273,6 +281,10 @@ def like(id):
 def unlike(id):
     session = create_session()
     new = session.query(News).get(id)
+    if not new:
+        return not_found(404)
+    if str(id) not in current_user.liked_news.split() or new.creator == current_user.id:
+        return make_response(jsonify({'error': 'bad request'}), 400)
     new.likes -= 1
     liked = current_user.liked_news.split()
     liked.remove(str(id))
@@ -295,19 +307,17 @@ def liked_news():
 @app.route('/my_subscriptions')
 @login_required
 def my_subscriptions():
-    session, users = create_session(), []
-    for subscription in current_user.subscriptions:
-        users.append(session.query(Users).get(subscription.sub))
+    session = create_session()
+    users = [session.query(Users).get(int(id)) for id in current_user.subscriptions.split()]
     return render_template('subscriptions.html', users=users, title='Мои подписки')
 
 
 @app.route('/subscribers/<int:id>')
 @login_required
 def subscribers(id):
-    session, users = create_session(), []
+    session = create_session()
     user = session.query(Users).get(id)
-    for subscriber in user.subscribers.split():
-        users.append(session.query(Users).get(int(subscriber)))
+    users = [session.query(Users).get(int(id)) for id in user.subscribers.split()]
     return render_template('subscriptions.html', users=users,
                            subs_count=user.subs_count, title='Подписчики')
 
@@ -317,8 +327,13 @@ def subscribers(id):
 def subscribe(id):
     session = create_session()
     user = session.query(Users).get(id)
-    subscription = Subscriptions(sub=id)
-    current_user.subscriptions.append(subscription)
+    if not user:
+        return not_found(404)
+    subscriptions = current_user.subscriptions.split()
+    if str(id) in subscriptions or id == current_user.id:
+        return make_response(jsonify({'error': 'bad request'}), 400)
+    subscriptions.append(str(id))
+    current_user.subscriptions = ' '.join(subscriptions)
     subscribers = user.subscribers.split()
     subscribers.append(str(current_user.id))
     user.subscribers = ' '.join(subscribers)
@@ -334,9 +349,13 @@ def subscribe(id):
 def unsubscribe(id):
     session = create_session()
     user = session.query(Users).get(id)
-    subscription = session.query(Subscriptions).filter(Subscriptions.user_id == current_user.id,
-                                                       Subscriptions.sub == id).first()
-    session.delete(subscription)
+    if not user:
+        return not_found(404)
+    subscriptions = current_user.subscriptions.split()
+    if str(id) not in subscriptions or id == current_user.id:
+        return make_response(jsonify({'error': 'bad request'}), 400)
+    subscriptions.remove(str(id))
+    current_user.subscriptions = ' '.join(subscriptions)
     subscribers = user.subscribers.split()
     subscribers.remove(str(current_user.id))
     user.subscribers = ' '.join(subscribers)

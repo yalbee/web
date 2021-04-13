@@ -19,11 +19,11 @@ class Users(SqlAlchemyBase, UserMixin, SerializerMixin):
     hometown = sqlalchemy.Column(sqlalchemy.String)
     birthday = sqlalchemy.Column(sqlalchemy.Date)
     image = sqlalchemy.Column(sqlalchemy.String, default='/static/img/0.jpeg')
+    subscriptions = sqlalchemy.Column(sqlalchemy.String, default='')  # подписки пользователя
     subscribers = sqlalchemy.Column(sqlalchemy.String, default='')  # подписчики
     subs_count = sqlalchemy.Column(sqlalchemy.Integer, default=0)  # количество подписчиков
     liked_news = sqlalchemy.Column(sqlalchemy.String, default='')  # понравившиеся записи
     news = orm.relation("News", back_populates='user')
-    subscriptions = orm.relation("Subscriptions", back_populates='user')
 
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)

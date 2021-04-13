@@ -49,14 +49,16 @@ textarea.profile {
     width: 67%;
     height: 120px;
     resize: none;
+    background-color: #FFFFFF;
 }
 
 textarea.new {
     border: 0px;
     margin: 1%;
     width: 100%;
-    min-height: 100px;
+    height: 200px;
     resize: height;
+    background-color: #FFFFFF;
 }
 
 form {

@@ -145,7 +145,8 @@ def redact_profile():
             except UnidentifiedImageError:
                 return render_template('redact_profile.html', title='Редактировать профиль',
                                        form=form, message='Это не фотография...')
-        user.hometown = form.hometown.data
+        if form.hometown.data != '':
+            user.hometown = form.hometown.data
         user.birthday = form.birthday.data
         user.about = form.about.data
         session.commit()
@@ -179,6 +180,15 @@ def show_news():
     return render_template('news.html', title='Новости', news=news, liked=liked)
 
 
+@app.route('/news/<int:id>')
+@login_required
+def new(id):
+    session = create_session()
+    new = session.query(News).get(id)
+    liked = bool(str(id) in current_user.liked_news.split())
+    return render_template('new.html', new=new, liked=liked, title=new.title)
+
+
 @app.route('/categories')
 @login_required
 def categories():
@@ -188,6 +198,9 @@ def categories():
 @app.route('/news/<category>')
 @login_required
 def news_by_category(category):
+    if category not in ['Спорт', 'Музыка', 'Политика', 'IT',
+                        'Искусство', 'Наука', 'Юмор', 'Другое']:
+        not_found()
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id,
                                       News.category == category).order_by(News.datetime.desc()).all()
@@ -211,18 +224,20 @@ def create_new():
     return render_template('create_new.html', title='Создать запись', form=form)
 
 
-@app.route('/news/<int:id>', methods=['GET', 'POST'])
+@app.route('/redact_new/<int:id>', methods=['GET', 'POST'])
 @login_required
 def redact_new(id):
+    session = create_session()
+    new = session.query(News).get(id)
+    if current_user.id != new.creator:
+        return make_response(jsonify({'error': 'you are not creator of this new'}), 403)
     form = NewForm()
     if form.validate_on_submit():
-        session = create_session()
-        new = session.query(News).get(id)
         new.title = form.title.data
         new.category = form.category.data
         new.content = form.content.data
         session.commit()
-        return redirect(f'/users/{current_user.id}')
+        return redirect(f'/news/{id}')
     return render_template('create_new.html', title='Редактировать запись', form=form, id=id)
 
 
@@ -231,6 +246,8 @@ def redact_new(id):
 def delete_new(id):
     session = create_session()
     new = session.query(News).get(id)
+    if current_user.id != new.creator:
+        return make_response(jsonify({'error': 'you are not creator of this new'}), 403)
     session.delete(new)
     session.commit()
     return redirect(f'/users/{current_user.id}')
@@ -248,7 +265,7 @@ def like(id):
     session.merge(current_user)
     session.merge(new)
     session.commit()
-    return redirect('/liked_news')
+    return redirect(f'/news/{id}')
 
 
 @app.route('/unlike/<int:id>')
@@ -263,17 +280,14 @@ def unlike(id):
     session.merge(current_user)
     session.merge(new)
     session.commit()
-    return redirect('/liked_news')
+    return redirect(f'/news/{id}')
 
 
 @app.route('/liked_news')
 @login_required
 def liked_news():
     session, news = create_session(), []
-    for id in current_user.liked_news.split():
-        news.append(session.query(News).get(id))
-    news = sorted(news, key=lambda x: x.datetime)
-    news.reverse()
+    news = [session.query(News).get(int(id)) for id in current_user.liked_news.split()]
     liked = [int(id) for id in current_user.liked_news.split()]
     return render_template('news.html', title='Понравившееся', news=news, liked=liked)
 

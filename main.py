@@ -9,6 +9,7 @@ from data.models.comments import Comments
 from data.forms.register import RegisterForm
 from data.forms.login import LoginForm
 from data.forms.create_new import NewForm
+from data.forms.create_comment import CommentForm
 from data.forms.redact_profile import ProfileRedactForm
 from data.forms.change_password import ChangePasswordForm
 from data.users_resource import RegisterResource, LoginResource, UsersResource, UsersListResource
@@ -177,19 +178,26 @@ def change_password():
 def show_news():
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id).order_by(News.datetime.desc()).all()
-    liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('news.html', title='Новости', news=news, liked=liked)
+    return render_template('news.html', title='Новости', news=news)
 
 
-@app.route('/news/<int:id>')
+@app.route('/news/<int:id>', methods=['GET', 'POST'])
 @login_required
 def new(id):
     session = create_session()
     new = session.query(News).get(id)
     if not new:
         return not_found(404)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comments(content=form.comment.data, creator=current_user.id)
+        comment.datetime = datetime.datetime.now()
+        comment.string_dt = comment.datetime.strftime('%m/%d %H:%M')
+        new.comments.append(comment)
+        session.commit()
+        return redirect(f'/news/{id}')
     liked = bool(str(id) in current_user.liked_news.split())
-    return render_template('new.html', new=new, liked=liked, title=new.title)
+    return render_template('new.html', new=new, liked=liked, title=new.title, form=form)
 
 
 @app.route('/categories')
@@ -207,8 +215,7 @@ def news_by_category(category):
     session = create_session()
     news = session.query(News).filter(News.creator != current_user.id,
                                       News.category == category).order_by(News.datetime.desc()).all()
-    liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('news.html', title=category, news=news, liked=liked)
+    return render_template('news.html', title=category, news=news)
 
 
 @app.route('/create_news', methods=['GET', 'POST'])
@@ -303,8 +310,7 @@ def unlike(id):
 def liked_news():
     session, news = create_session(), []
     news = [session.query(News).get(int(id)) for id in current_user.liked_news.split()]
-    liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('news.html', title='Понравившееся', news=news, liked=liked)
+    return render_template('news.html', title='Понравившееся', news=news)
 
 
 @app.route('/my_subscriptions')

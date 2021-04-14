@@ -28,6 +28,19 @@
         </h5>
         <hr>
         <h3 style="text-align: center;">Комментарии:</h3>
+        <p>Всего комментариев: {{ new.comments|count }}</p>
+        {% for comment in new.comments %}
+        {% endfor %}
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            {{ form.comment(class="form-control") }}<br>
+            {% for error in form.comment.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+            {{ form.submit(type="submit", class="btn btn-primary") }}
+        </form>
     </div>
 </div>
 {% endblock %}

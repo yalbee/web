@@ -267,6 +267,21 @@ def delete_new(id):
     return redirect(f'/users/{current_user.id}')
 
 
+@app.route('/delete_comment/<int:id>')
+@login_required
+def delete_comment(id):
+    session = create_session()
+    comment = session.query(Comments).get(id)
+    if not comment:
+        return not_found(404)
+    if current_user.id != comment.creator:
+        return make_response(jsonify({'error': 'you are not creator of this comment'}), 403)
+    new_id = comment.new.id
+    session.delete(comment)
+    session.commit()
+    return redirect(f'/news/{new_id}')
+
+
 @app.route('/like/<int:id>')
 @login_required
 def like(id):

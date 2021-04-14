@@ -7,7 +7,7 @@
     <div class="content">
         <a style="text-decoration: none; color: black;" href="/users/{{ new.creator }}">
             <img src="{{ new.user.image }}" class="icon" align="left">
-            <h4 class="alert-heading">{{ new.user.name }} {{ new.user.surname }}</h4>
+            <h4>{{ new.user.name }} {{ new.user.surname }}</h4>
         </a>
         <hr>
         <h6 style="text-align: right"><a style="color: black;" href="/news/{{ new.category }}">{{ new.category }}</a></h6>
@@ -30,8 +30,19 @@
         <h3 style="text-align: center;">Комментарии:</h3>
         <p>Всего комментариев: {{ new.comments|count }}</p>
         {% for comment in new.comments %}
+            <br>
+            <br>
+            <h6 style="text-align: left;">{{ comment.string_dt }}</h6>
+            <a style="text-decoration: none; color: black;" href="/users/{{ comment.creator }}">
+                <img src="{{ comment.user.image }}" class="icon" align="left">
+                <h5>{{ comment.user.name }} {{ comment.user.surname }}</h5>
+            </a>
+            <textarea class="comment" disabled>{{ comment.content }}</textarea>
+            {% if current_user.id == comment.creator %}
+                <a class="btn btn-danger" href="/delete_comment/{{ comment.id }}">Удалить</a>
+            {% endif %}
         {% endfor %}
-        <form action="" method="post">
+        <form action="" method="post" style="margin-top: 70px;">
             {{ form.hidden_tag() }}
             {{ form.comment(class="form-control") }}<br>
             {% for error in form.comment.errors %}

@@ -63,7 +63,7 @@ class UsersResource(Resource):
         session = create_session()
         user = session.query(Users).get(id)
         if not user:
-            return make_response(jsonify({'error': f'user {id} not found'}), 400)
+            return make_response(jsonify({'error': f'user {id} not found'}), 404)
         return jsonify({'user': user.to_dict(only=[
             'id', 'surname', 'name', 'hometown', 'birthday', 'about'])})
 

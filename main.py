@@ -14,6 +14,7 @@ from data.forms.redact_profile import ProfileRedactForm
 from data.forms.change_password import ChangePasswordForm
 from data.users_resource import RegisterResource, LoginResource, UsersResource, UsersListResource
 from data.news_resource import NewsResource, NewsListResource
+from data.comments_resource import CommentsResource, CommentsListResource
 from PIL import Image, UnidentifiedImageError
 import random
 import datetime
@@ -26,6 +27,8 @@ api.add_resource(UsersResource, '/api/users/<int:id>')
 api.add_resource(UsersListResource, '/api/users')
 api.add_resource(NewsResource, '/api/news/<int:id>')
 api.add_resource(NewsListResource, '/api/news')
+api.add_resource(CommentsResource, '/api/comments/<int:id>')
+api.add_resource(CommentsListResource, '/api/comments')
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['JWT_SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['JWT_EXPIRES'] = datetime.timedelta(hours=24)
@@ -62,8 +65,8 @@ def welcome():
     session = create_session()
     news = session.query(News).all()
     if news:
-        return render_template('welcome.html', title='НЕ ВК.com', new=random.choice(news))
-    return render_template('base.html', title='НЕ ВК.com')
+        return render_template('welcome.html', title='shitter.com', new=random.choice(news))
+    return render_template('base.html', title='shitter.com')
 
 
 @app.route('/register', methods=['GET', 'POST'])

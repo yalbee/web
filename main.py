@@ -130,8 +130,7 @@ def profile(id):
     news = session.query(News).filter(News.creator == id).order_by(News.datetime.desc())
     title = f'{user.name} {user.surname}'
     subscribed = bool(str(id) in current_user.subscriptions.split())
-    liked = [int(id) for id in current_user.liked_news.split()]
-    return render_template('profile.html', title=title, user=user, news=news, subscribed=subscribed, liked=liked)
+    return render_template('profile.html', title=title, user=user, news=news, subscribed=subscribed)
 
 
 @app.route('/redact_profile', methods=['GET', 'POST'])

@@ -18,6 +18,7 @@ from data.comments_resource import CommentsResource, CommentsListResource
 from PIL import Image, UnidentifiedImageError
 import random
 import datetime
+import os
 
 app = Flask(__name__)
 api = Api(app)
@@ -403,4 +404,5 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)

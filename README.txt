@@ -26,6 +26,7 @@ db.
 - users -> comments
 
 api.
+api/register, api/login, api/users, api/users/<id>, api/news, api/news/<id>, api/comments, api/comments/<id>
 Реализован через flask-restful.
 Через запросы также можно смотреть информацию о пользователях; смотреть, создавать, редактировать и удалять новости; оставлять и удалять комментарии.
 Для всего этого пользователь должен авторизоваться.

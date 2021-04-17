@@ -32,6 +32,7 @@ api.
 Для авторизации используются jwt токены - закодированные json словари с информацией о пользователе.
 Через api/login или api/register пользователю выдается токен.
 Получив токен, пользователь должен оставлять его в заголовке 'Authorization'.
+Токен истекает и становится недействительным через 24 часа.
 Пример:
 	token = post('http://webyl.herokuapp.com/api/login', json={'email': 'a@a', 'password': 'password'}).json()
 	print(get('http://webyl.herokuapp.com/api/news', headers={'Authorization': token['token']}).json())

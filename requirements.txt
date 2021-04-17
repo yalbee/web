@@ -1,4 +1,6 @@
 Flask==1.1.2
+Flask-JWT==0.3.2
+PyJWT==1.4.2
 Flask-JWT-Simple==0.0.3
 Flask-Login==0.5.0
 Flask-RESTful==0.3.8
